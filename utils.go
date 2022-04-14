@@ -15,7 +15,7 @@ func ParseUrl(raw string) (string, error) {
 
 	prehost := u.Host
 
-	u.Host = "pipedproxy-bom.kavin.rocks"
+	u.Host = "hyperpipe-proxy.onrender.com"
 	q := u.Query()
 	q.Set("host", prehost)
 	u.RawQuery = q.Encode()
