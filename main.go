@@ -8,16 +8,25 @@ import (
 )
 
 func SetHeaders(c *fiber.Ctx) error {
-	c.Vary("Origin")
 	c.Type("json", "utf-8")
-	c.Set("Access-Control-Allow-Origin", "https://hyperpipe.surge.sh")
+	c.Set("Access-Control-Allow-Origin", "*")
+	c.Set("Access-Control-Allow-Headers", "*")
+	c.Set("Access-Control-Max-Age", "1728000")
+
 	return c.Next()
 }
 
 func HandleHealth(c *fiber.Ctx) error {
 	defer calc()()
 
-	return c.Status(204).SendString("")
+	return c.SendStatus(204)
+}
+
+func HandleNext(c *fiber.Ctx) error {
+	defer calc()()
+
+	res, status := FetchNext(c.Params("id"))
+	return c.Status(status).SendString(res)
 }
 
 func HandleBrowse(c *fiber.Ctx) error {
@@ -47,6 +56,7 @@ func main() {
 	app.Use(recover.New())
 
 	app.Get("/healthz", HandleHealth)
+	app.Get("/next/:id", HandleNext)
 	app.Get("/browse/:id", HandleBrowse)
 	app.Get("/channel/:id", HandleArtist)
 
