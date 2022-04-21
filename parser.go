@@ -150,9 +150,9 @@ func GetNextSongs(n gjson.Result) []Item {
 				j := v.Get("playlistPanelVideoRenderer")
 
 				r = append(r, Item{
-					Id: j.Get("navigationEndpoint.watchEndpoint.videoId").String(),
-					Title: RunsText(j.Get("title")),
-					Sub: j.Get("longBylineText.runs.2.text").String(),
+					Id:         j.Get("navigationEndpoint.watchEndpoint.videoId").String(),
+					Title:      RunsText(j.Get("title")),
+					Sub:        j.Get("longBylineText.runs.2.text").String(),
 					Thumbnails: GetThumbnails(j.Get("thumbnail.thumbnails")),
 				})
 			}()
@@ -210,7 +210,7 @@ func ParseNext(raw string) (string, error) {
 
 	val := Next{
 		MediaSession: MediaSession{
-			Album: RunsText(m.Get("album")),
+			Album:      RunsText(m.Get("album")),
 			Thumbnails: GetThumbnails(m.Get("thumbnailDetails.thumbnails")),
 		},
 		Songs: GetNextSongs(n.Get("contents")),

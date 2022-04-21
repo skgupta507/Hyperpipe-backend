@@ -1,6 +1,5 @@
 package main
 
-
 /* Parsers */
 type Thumbnail struct {
 	Height int64  `json:"height"`
@@ -34,14 +33,13 @@ type Artist struct {
 
 type MediaSession struct {
 	Thumbnails []Thumbnail `json:"thumbnails"`
-	Album string `json:"album"`
+	Album      string      `json:"album"`
 }
 
 type Next struct {
-	Songs []Item `json:"songs"`
+	Songs        []Item       `json:"songs"`
 	MediaSession MediaSession `json:"mediaSession"`
 }
-
 
 /* Structs and Types */
 type Client struct {

@@ -1,11 +1,11 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"io"
 	"log"
-	"bytes"
 	"net/http"
-	"encoding/json"
 )
 
 func Fetch(path string, data []byte) (string, int, error) {

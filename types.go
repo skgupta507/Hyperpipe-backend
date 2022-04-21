@@ -27,7 +27,7 @@ func GetTypeNext(id string) NextData {
 		Context: BaseContext,
 		Panel:   true,
 		Audio:   true,
-		Tuner: "AUTOMIX_SETTING_NORMAL",
+		Tuner:   "AUTOMIX_SETTING_NORMAL",
 		MusicConfig: WatchMusicConfig{
 			Panel: true,
 			Type:  "MUSIC_VIDEO_TYPE_ATV",
