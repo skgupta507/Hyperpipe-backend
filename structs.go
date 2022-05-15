@@ -37,8 +37,14 @@ type MediaSession struct {
 }
 
 type Next struct {
+	LyricsId string `json:"lyricsId"`
 	Songs        []Item       `json:"songs"`
 	MediaSession MediaSession `json:"mediaSession"`
+}
+
+type Lyrics struct {
+	Text   string `json:"text"`
+	Source string `json:"source"`
 }
 
 /* Structs and Types */

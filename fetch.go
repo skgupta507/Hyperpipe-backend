@@ -10,7 +10,7 @@ import (
 
 func Fetch(path string, data []byte) (string, int, error) {
 
-	url := "https://music.youtube.com/youtubei/v1/" + path + "?key=AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30&prettyPrint=false"
+	url := "https://music.youtube.com/youtubei/v1/" + path + "?key=AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30"
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(data))
 	if err != nil {
@@ -41,9 +41,9 @@ func Fetch(path string, data []byte) (string, int, error) {
 	return string(body), resp.StatusCode, nil
 }
 
-func FetchArtist(id string) (string, int) {
+func FetchBrowse(id string, browse BrowseData) (string, int) {
 
-	data, err := json.Marshal(GetTypeBrowse("artist", id))
+	data, err := json.Marshal(browse)
 	if err != nil {
 		return ErrorMessage(err), 500
 	}
@@ -51,11 +51,33 @@ func FetchArtist(id string) (string, int) {
 	raw, status, err := Fetch("browse", data)
 	if err != nil {
 		return ErrorMessage(err), 500
-	} else if status > 300 {
-		return raw, status
 	}
 
+	return raw, status
+
+}
+
+func FetchArtist(id string) (string, int) {
+
+	browse := GetTypeBrowse("artist", id)
+
+	raw, status := FetchBrowse(id, browse)
+
 	res, err := ParseArtist(raw)
+	if err != nil {
+		return ErrorMessage(err), 500
+	}
+
+	return res, status
+}
+
+func FetchLyrics(id string) (string, int) {
+
+	browse := GetTypeBrowse("lyrics", id)
+
+	raw, status := FetchBrowse(id, browse)
+
+	res, err := ParseLyrics(raw)
 	if err != nil {
 		return ErrorMessage(err), 500
 	}
@@ -73,19 +95,12 @@ func FetchNext(id string) (string, int) {
 	raw, status, err := Fetch("next", data)
 	if err != nil {
 		return ErrorMessage(err), 500
-	} else if status > 300 {
-		return raw, status
 	}
 
 	res, err := ParseNext(raw)
+	if err != nil {
+		return ErrorMessage(err), 500
+	}
 
 	return res, status
 }
-
-/*func main() {
-
-	res, status := FetchNext("KWLGyeg74es")
-
-	log.Println(status)
-	log.Println(res)
-}*/

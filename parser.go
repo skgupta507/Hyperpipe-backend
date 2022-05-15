@@ -201,17 +201,43 @@ func ParseArtist(raw string) (string, error) {
 	return string(res), nil
 }
 
+func ParseLyrics(raw string) (string, error) {
+
+	j := gjson.Parse(raw)
+
+	d := j.Get("contents.sectionListRenderer.contents.0.musicDescriptionShelfRenderer")
+
+	l := d.Get("description")
+	s := d.Get("footer")
+
+	val := Lyrics{
+		Text:   RunsText(l),
+		Source: RunsText(s),
+	}
+
+	res, err := json.Marshal(val)
+	if err != nil {
+		return "", err
+	}
+
+	return string(res), nil
+}
+
 func ParseNext(raw string) (string, error) {
 
 	j := gjson.Parse(raw)
 
+	c := j.Get("contents.singleColumnMusicWatchNextResultsRenderer.tabbedRenderer.watchNextTabbedResultsRenderer.tabs")
 	m := j.Get("playerOverlays.playerOverlayRenderer.browserMediaSession.browserMediaSessionRenderer")
-	n := j.Get("contents.singleColumnMusicWatchNextResultsRenderer.tabbedRenderer.watchNextTabbedResultsRenderer.tabs.#(tabRenderer.title == Up next).tabRenderer.content.musicQueueRenderer.content.playlistPanelRenderer")
+	n := c.Get("#(tabRenderer.title == Up next).tabRenderer.content.musicQueueRenderer.content.playlistPanelRenderer")
+	l := c.Get("#(tabRenderer.title == Lyrics).tabRenderer.endpoint.browseEndpoint.browseId")
 
 	val := Next{
+		LyricsId: l.String(),
 		MediaSession: MediaSession{
 			Album:      RunsText(m.Get("album")),
 			Thumbnails: GetThumbnails(m.Get("thumbnailDetails.thumbnails")),
+
 		},
 		Songs: GetNextSongs(n.Get("contents")),
 	}

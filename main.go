@@ -29,19 +29,24 @@ func HandleNext(c *fiber.Ctx) error {
 	return c.Status(status).SendString(res)
 }
 
+
 func HandleBrowse(c *fiber.Ctx) error {
 	defer calc()()
 
 	id := c.Params("id")
 
-	switch id[:2] {
-	case "UC":
+	switch {
+	case id[:2] == "UC":
 		res, status := FetchArtist(id)
+		return c.Status(status).SendString(res)
+	case id[:4] == "MPLY":
+		res, status := FetchLyrics(id)
 		return c.Status(status).SendString(res)
 	default:
 		return c.SendString("{error: \"Invalid URL\"}")
 	}
 }
+
 
 func HandleArtist(c *fiber.Ctx) error {
 	defer calc()()
