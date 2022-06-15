@@ -27,10 +27,10 @@ func ErrorMessage(err error) string {
 	return fmt.Sprintf("{\"error\": \"%s\", \"message\": \"Please Report this error\"}", err)
 }
 
-func calc() func() {
+func calc(url string) func() {
 	start := time.Now()
 	return func() {
-		msg := fmt.Sprintf("Responded in %v\n", time.Since(start))
+		msg := fmt.Sprintf("Responded %v in %v\n", url, time.Since(start))
 		fmt.Println(msg)
 	}
 }

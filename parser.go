@@ -57,97 +57,19 @@ func GetThumbnails(j gjson.Result) []Thumbnail {
 	return t
 }
 
-func GetSongs(s gjson.Result) []Item {
-
-	r := []Item{}
-
-	wg := sync.WaitGroup{}
-
-	s.ForEach(
-		func(_, v gjson.Result) bool {
-
-			wg.Add(1)
-
-			go func() {
-				defer wg.Done()
-
-				j := v.Get("musicResponsiveListItemRenderer")
-				flex := j.Get("flexColumns.#.musicResponsiveListItemFlexColumnRenderer.text.runs.0")
-
-				r = append(r, Item{
-					Id:         j.Get("playlistItemData.videoId").String(),
-					Title:      flex.Get("#(navigationEndpoint.watchEndpoint.videoId).text").String(),
-					Thumbnails: GetThumbnails(j.Get("thumbnail.musicThumbnailRenderer.thumbnail.thumbnails")),
-				})
-
-			}()
-
-			wg.Wait()
-
-			return true
-		},
-	)
-
-	return r
-}
-
-func GetTwoRowItem(t string, a gjson.Result) []Item {
-
-	r := []Item{}
-
-	var id string
-
-	if t == "album" || t == "singles" {
-		id = "menu.menuRenderer.items.#(menuNavigationItemRenderer.text.runs.0.text == Shuffle play).menuNavigationItemRenderer.navigationEndpoint.watchPlaylistEndpoint.playlistId"
-	} else {
-		id = "navigationEndpoint.browseEndpoint.browseId"
-	}
-
-	wg := sync.WaitGroup{}
-
-	a.ForEach(
-		func(_, v gjson.Result) bool {
-
-			wg.Add(1)
-
-			go func() {
-				defer wg.Done()
-
-				j := v.Get("musicTwoRowItemRenderer")
-
-				r = append(r, Item{
-					Id:         j.Get(id).String(),
-					Title:      RunsText(j.Get("title")),
-					Sub:        RunsText(j.Get("subtitle")),
-					Thumbnails: GetThumbnails(j.Get("thumbnailRenderer.musicThumbnailRenderer.thumbnail.thumbnails")),
-				})
-
-			}()
-
-			wg.Wait()
-
-			return true
-		},
-	)
-
-	return r
-}
-
 func GetNextSongs(n gjson.Result) []Item {
 
 	r := []Item{}
 
 	wg := sync.WaitGroup{}
 
-	n.ForEach(
-		func(_, v gjson.Result) bool {
+	n.Get("#.playlistPanelRenderer").ForEach(
+		func(_, j gjson.Result) bool {
 
 			wg.Add(1)
 
 			go func() {
 				defer wg.Done()
-
-				j := v.Get("playlistPanelVideoRenderer")
 
 				r = append(r, Item{
 					Id:         j.Get("navigationEndpoint.watchEndpoint.videoId").String(),
@@ -164,6 +86,76 @@ func GetNextSongs(n gjson.Result) []Item {
 	)
 
 	return r
+}
+
+func ParseHome(raw string) (string, error) {
+
+	j := gjson.Parse(raw)
+
+	c := j.Get("contents.singleColumnBrowseResultsRenderer.tabs.0.tabRenderer.content.sectionListRenderer")
+
+	m := c.Get("contents")
+	n := c.Get("continuations.0.nextContinuationData.continuation").String()
+
+	var body []map[string]interface{}
+
+	m.ForEach(
+		func(key, value gjson.Result) bool {
+
+			var v map[string]interface{}
+
+			icsr := value.Get("musicImmersiveCarouselShelfRenderer")
+			csr := value.Get("musicCarouselShelfRenderer")
+
+			switch {
+			case icsr.Exists():
+				v = CarouselShelfRenderer(icsr)
+			case csr.Exists():
+				v = CarouselShelfRenderer(csr)
+			default:
+				v = make(map[string]interface{})
+				v["raw"] = value.Value()
+			}
+
+			body = append(body, v)
+
+			return true
+		},
+	)
+
+	data := Home{
+		Contents: body,
+		Continue: n,
+	}
+
+	res, err := json.Marshal(data)
+	if err != nil {
+		return "", err
+	}
+
+	return string(res), nil
+}
+
+func ParseExplore(raw string) (string, error) {
+
+	j := gjson.Parse(raw)
+
+	c := j.Get("contents.singleColumnBrowseResultsRenderer.tabs.0.tabRenderer.content.sectionListRenderer.contents")
+
+	a := c.Get("#(musicCarouselShelfRenderer.header.musicCarouselShelfBasicHeaderRenderer.title.runs.0.text == New albums & singles).musicCarouselShelfRenderer")
+	t := c.Get("#(musicCarouselShelfRenderer.header.musicCarouselShelfBasicHeaderRenderer.title.runs.0.text == Trending).musicCarouselShelfRenderer")
+
+	val := Explore{
+		Albums:   TwoRowItemRenderer("album", a.Get("contents")),
+		Trending: ResponsiveListItemRenderer(t.Get("contents")),
+	}
+
+	res, err := json.Marshal(val)
+	if err != nil {
+		return "", err
+	}
+
+	return string(res), nil
 }
 
 func ParseArtist(raw string) (string, error) {
@@ -186,10 +178,10 @@ func ParseArtist(raw string) (string, error) {
 		BrowsePlaylistId: h.Get("playButton.buttonRenderer.navigationEndpoint.watchEndpoint.playlistId").String(),
 		PlaylistId:       s.Get("contents.0.musicResponsiveListItemRenderer.flexColumns.0.musicResponsiveListItemFlexColumnRenderer.text.runs.0.navigationEndpoint.watchEndpoint.playlistId").String(),
 		Items: Items{
-			Songs:   GetSongs(s.Get("contents")),
-			Albums:  GetTwoRowItem("album", a.Get("contents")),
-			Singles: GetTwoRowItem("singles", m.Get("contents")),
-			Artists: GetTwoRowItem("artist", u.Get("contents")),
+			Songs:   ResponsiveListItemRenderer(s.Get("contents")),
+			Albums:  TwoRowItemRenderer("album", a.Get("contents")),
+			Singles: TwoRowItemRenderer("singles", m.Get("contents")),
+			Artists: TwoRowItemRenderer("artist", u.Get("contents")),
 		},
 	}
 
@@ -229,6 +221,7 @@ func ParseNext(raw string) (string, error) {
 
 	c := j.Get("contents.singleColumnMusicWatchNextResultsRenderer.tabbedRenderer.watchNextTabbedResultsRenderer.tabs")
 	m := j.Get("playerOverlays.playerOverlayRenderer.browserMediaSession.browserMediaSessionRenderer")
+
 	n := c.Get("#(tabRenderer.title == Up next).tabRenderer.content.musicQueueRenderer.content.playlistPanelRenderer")
 	l := c.Get("#(tabRenderer.title == Lyrics).tabRenderer.endpoint.browseEndpoint.browseId")
 
@@ -237,7 +230,6 @@ func ParseNext(raw string) (string, error) {
 		MediaSession: MediaSession{
 			Album:      RunsText(m.Get("album")),
 			Thumbnails: GetThumbnails(m.Get("thumbnailDetails.thumbnails")),
-
 		},
 		Songs: GetNextSongs(n.Get("contents")),
 	}

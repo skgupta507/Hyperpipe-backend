@@ -10,15 +10,24 @@ var BaseContext = Context{
 }
 
 func GetTypeBrowse(t, id string) BrowseData {
-	return BrowseData{
-		Context: BaseContext,
-		MusicConfig: BrowseMusicConfig{
-			MusicConfig: PageType{
-				PageType: "MUSIC_PAGE_TYPE_" + strings.ToUpper(t),
+
+	if t != "" {
+		return BrowseData{
+			Context: BaseContext,
+			MusicConfig: BrowseMusicConfig{
+				MusicConfig: PageType{
+					PageType: "MUSIC_PAGE_TYPE_" + strings.ToUpper(t),
+				},
 			},
-		},
-		BrowseId: id,
+			BrowseId: id,
+		}
+	} else {
+		return BrowseData{
+			Context:  BaseContext,
+			BrowseId: id,
+		}
 	}
+
 }
 
 func GetTypeNext(id string) NextData {

@@ -11,6 +11,7 @@ type Item struct {
 	Id         string      `json:"id"`
 	Title      string      `json:"title"`
 	Sub        string      `json:"subtitle"`
+	SubId      string      `json:"subId"`
 	Thumbnails []Thumbnail `json:"thumbnails"`
 }
 
@@ -19,6 +20,16 @@ type Items struct {
 	Albums  []Item `json:"albums"`
 	Singles []Item `json:"singles"`
 	Artists []Item `json:"recommendedArtists"`
+}
+
+type Home struct {
+	Contents []map[string]interface{} `json:"contents"`
+	Continue string                   `json:"continue"`
+}
+
+type Explore struct {
+	Albums   []Item `json:"albums_and_singles"`
+	Trending []Item `json:"trending"`
 }
 
 type Artist struct {
@@ -37,7 +48,7 @@ type MediaSession struct {
 }
 
 type Next struct {
-	LyricsId string `json:"lyricsId"`
+	LyricsId     string       `json:"lyricsId"`
 	Songs        []Item       `json:"songs"`
 	MediaSession MediaSession `json:"mediaSession"`
 }

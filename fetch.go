@@ -6,11 +6,24 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strings"
+
+	"github.com/tidwall/gjson"
 )
 
-func Fetch(path string, data []byte) (string, int, error) {
+func Fetch(path string, data []byte, c string) (string, int, error) {
 
-	url := "https://music.youtube.com/youtubei/v1/" + path + "?key=AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30"
+	var query string
+
+	if c != "" {
+		query = "&ctoken=" + c + "&continuation=" + c + "&type=next"
+	} else {
+		query = ""
+	}
+
+	url := "https://music.youtube.com/youtubei/v1/" + path + "?key=AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30" + query + "&prettyPrint=false"
+
+	log.Println(url)
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(data))
 	if err != nil {
@@ -41,14 +54,14 @@ func Fetch(path string, data []byte) (string, int, error) {
 	return string(body), resp.StatusCode, nil
 }
 
-func FetchBrowse(id string, browse BrowseData) (string, int) {
+func FetchBrowse(id string, c string, browse BrowseData) (string, int) {
 
 	data, err := json.Marshal(browse)
 	if err != nil {
 		return ErrorMessage(err), 500
 	}
 
-	raw, status, err := Fetch("browse", data)
+	raw, status, err := Fetch("browse", data, c)
 	if err != nil {
 		return ErrorMessage(err), 500
 	}
@@ -57,11 +70,68 @@ func FetchBrowse(id string, browse BrowseData) (string, int) {
 
 }
 
+func FetchHome(c string) (string, int) {
+
+	/* WIP */
+
+	id := "FEmusic_home"
+
+	if c != "" {
+		id = ""
+	}
+
+	log.Println(id)
+
+	context := GetTypeBrowse("home", id)
+
+	raw, status := FetchBrowse(id, c, context)
+
+	/*res, err := ParseHome(raw)
+	if err != nil {
+		return ErrorMessage(err), 500
+	}*/
+
+	return raw, status
+}
+
+func FetchExplore() (string, int) {
+
+	id := "FEmusic_explore"
+
+	log.Println(id)
+
+	context := GetTypeBrowse("", id)
+
+	raw, status := FetchBrowse(id, "", context)
+
+	res, err := ParseExplore(raw)
+	if err != nil {
+		return ErrorMessage(err), 500
+	}
+
+	return res, status
+}
+
+func FetchMoods() (string, int) {
+
+	/* WIP */
+
+	id := "FEmusic_moods_and_genres"
+
+	log.Println(id)
+
+	context := GetTypeBrowse("", id)
+
+	raw, status := FetchBrowse(id, "", context)
+
+	return raw, status
+}
+
 func FetchArtist(id string) (string, int) {
 
-	browse := GetTypeBrowse("artist", id)
+	context := GetTypeBrowse("artist", id)
 
-	raw, status := FetchBrowse(id, browse)
+	raw, status := FetchBrowse(id, "", context)
 
 	res, err := ParseArtist(raw)
 	if err != nil {
@@ -73,9 +143,9 @@ func FetchArtist(id string) (string, int) {
 
 func FetchLyrics(id string) (string, int) {
 
-	browse := GetTypeBrowse("lyrics", id)
+	context := GetTypeBrowse("lyrics", id)
 
-	raw, status := FetchBrowse(id, browse)
+	raw, status := FetchBrowse(id, "", context)
 
 	res, err := ParseLyrics(raw)
 	if err != nil {
@@ -85,6 +155,30 @@ func FetchLyrics(id string) (string, int) {
 	return res, status
 }
 
+func FetchPlaylist(id string) (string, int) {
+
+	context := GetTypeBrowse("playlist", id)
+
+	raw, status := FetchBrowse(id, "", context)
+
+	return raw, status
+}
+
+func FetchAlbum(id string) (string, int) {
+
+	context := GetTypeBrowse("album", id)
+
+	raw, status := FetchBrowse(id, "", context)
+
+	url := gjson.Parse(raw).Get("microformat.microformatDataRenderer.urlCanonical").String()
+
+	data := "{\"canonicalUrl\": \"" +
+		strings.Replace(url, "https://music.youtube.com", "", -1) +
+		"\"}"
+
+	return data, status
+}
+
 func FetchNext(id string) (string, int) {
 
 	data, err := json.Marshal(GetTypeNext(id))
@@ -92,7 +186,7 @@ func FetchNext(id string) (string, int) {
 		return ErrorMessage(err), 500
 	}
 
-	raw, status, err := Fetch("next", data)
+	raw, status, err := Fetch("next", data, "")
 	if err != nil {
 		return ErrorMessage(err), 500
 	}
