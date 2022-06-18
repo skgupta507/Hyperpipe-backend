@@ -63,7 +63,7 @@ func GetNextSongs(n gjson.Result) []Item {
 
 	wg := sync.WaitGroup{}
 
-	n.Get("#.playlistPanelRenderer").ForEach(
+	n.Get("#.playlistPanelVideoRenderer").ForEach(
 		func(_, j gjson.Result) bool {
 
 			wg.Add(1)
