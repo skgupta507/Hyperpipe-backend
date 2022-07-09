@@ -24,14 +24,6 @@ func HandleHealth(c *fiber.Ctx) error {
 	return c.SendStatus(204)
 }
 
-func HandleHome(c *fiber.Ctx) error {
-	defer calc(c.OriginalURL())()
-
-	res, status := FetchHome(c.Params("id"))
-
-	return c.Status(status).SendString(res)
-}
-
 func HandleExplore(c *fiber.Ctx) error {
 	defer calc(c.OriginalURL())()
 
@@ -48,10 +40,30 @@ func HandleNext(c *fiber.Ctx) error {
 	return c.Status(status).SendString(res)
 }
 
+func HandleGenres(c *fiber.Ctx) error {
+	defer calc(c.OriginalURL())()
+
+	res, status := FetchGenres()
+
+	return c.Status(status).SendString(res)
+}
+
+func HandleGenre(c *fiber.Ctx) error {
+	defer calc(c.OriginalURL())()
+
+	res, status := FetchGenre(c.Params("id"))
+
+	return c.Status(status).SendString(res)
+}
+
 func HandleBrowse(c *fiber.Ctx) error {
 	defer calc(c.OriginalURL())()
 
 	id := c.Params("id")
+
+	if len(id) < 4 {
+		return c.Status(500).SendString("{\"error\": \"Browse Id is too Short\"}")
+	}
 
 	switch {
 	case id[:2] == "UC":
@@ -63,11 +75,8 @@ func HandleBrowse(c *fiber.Ctx) error {
 	case id[:4] == "MPRE":
 		res, status := FetchAlbum(id)
 		return c.Status(status).SendString(res)
-	case id[:4] == "VLRD" || id[:2] == "RD":
-		res, status := FetchPlaylist(id)
-		return c.Status(status).SendString(res)
 	default:
-		return c.SendString("{\"error\": \"Invalid Browse URL\"}")
+		return c.Status(500).SendString("{\"error\": \"Invalid Browse URL\"}")
 	}
 }
 
@@ -86,9 +95,9 @@ func main() {
 	app.Use(recover.New())
 
 	app.Get("/healthz", HandleHealth)
-	app.Get("/home", HandleHome)
-	app.Get("/home/:id", HandleHome)
 	app.Get("/explore", HandleExplore)
+	app.Get("/genres", HandleGenres)
+	app.Get("/genres/:id", HandleGenre)
 	app.Get("/next/:id", HandleNext)
 	app.Get("/browse/:id", HandleBrowse)
 	app.Get("/channel/:id", HandleArtist)

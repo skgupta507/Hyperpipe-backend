@@ -2,9 +2,24 @@ package main
 
 import (
 	"fmt"
+	"github.com/tidwall/gjson"
 	"net/url"
+	"strings"
 	"time"
 )
+
+func RunsText(j gjson.Result) string {
+
+	var s []string
+
+	a := j.Get("runs.#.text").Array()
+
+	for i := 0; i < len(a); i++ {
+		s = append(s, a[i].String())
+	}
+
+	return strings.Join(s, "")
+}
 
 func ParseUrl(raw string) (string, error) {
 
@@ -24,7 +39,9 @@ func ParseUrl(raw string) (string, error) {
 }
 
 func ErrorMessage(err error) string {
-	return fmt.Sprintf("{\"error\": \"%s\", \"message\": \"Please Report this error\"}", err)
+	data := url.QueryEscape(err.Error())
+	fmt.Println(err)
+	return fmt.Sprintf("{\"error\":\"%s\",\"message\":\"Got Error: %s\"}", data)
 }
 
 func calc(url string) func() {

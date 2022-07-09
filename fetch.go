@@ -11,19 +11,9 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func Fetch(path string, data []byte, c string) (string, int, error) {
+func Fetch(path string, data []byte) (string, int, error) {
 
-	var query string
-
-	if c != "" {
-		query = "&ctoken=" + c + "&continuation=" + c + "&type=next"
-	} else {
-		query = ""
-	}
-
-	url := "https://music.youtube.com/youtubei/v1/" + path + "?key=AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30" + query + "&prettyPrint=false"
-
-	log.Println(url)
+	url := "https://music.youtube.com/youtubei/v1/" + path + "?key=AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30&prettyPrint=false"
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(data))
 	if err != nil {
@@ -54,55 +44,29 @@ func Fetch(path string, data []byte, c string) (string, int, error) {
 	return string(body), resp.StatusCode, nil
 }
 
-func FetchBrowse(id string, c string, browse BrowseData) (string, int) {
+func FetchBrowse(id string, browse BrowseData) (string, int) {
 
 	data, err := json.Marshal(browse)
 	if err != nil {
 		return ErrorMessage(err), 500
 	}
 
-	raw, status, err := Fetch("browse", data, c)
+	raw, status, err := Fetch("browse", data)
 	if err != nil {
 		return ErrorMessage(err), 500
 	}
 
 	return raw, status
 
-}
-
-func FetchHome(c string) (string, int) {
-
-	/* WIP */
-
-	id := "FEmusic_home"
-
-	if c != "" {
-		id = ""
-	}
-
-	log.Println(id)
-
-	context := GetTypeBrowse("home", id)
-
-	raw, status := FetchBrowse(id, c, context)
-
-	/*res, err := ParseHome(raw)
-	if err != nil {
-		return ErrorMessage(err), 500
-	}*/
-
-	return raw, status
 }
 
 func FetchExplore() (string, int) {
 
 	id := "FEmusic_explore"
 
-	log.Println(id)
+	context := GetTypeBrowse("", id, "")
 
-	context := GetTypeBrowse("", id)
-
-	raw, status := FetchBrowse(id, "", context)
+	raw, status := FetchBrowse(id, context)
 
 	res, err := ParseExplore(raw)
 	if err != nil {
@@ -112,26 +76,43 @@ func FetchExplore() (string, int) {
 	return res, status
 }
 
-func FetchMoods() (string, int) {
-
-	/* WIP */
+func FetchGenres() (string, int) {
 
 	id := "FEmusic_moods_and_genres"
 
-	log.Println(id)
+	context := GetTypeBrowse("", id, "")
 
-	context := GetTypeBrowse("", id)
+	raw, status := FetchBrowse(id, context)
 
-	raw, status := FetchBrowse(id, "", context)
+	res, err := ParseGenres(raw)
+	if err != nil {
+		return ErrorMessage(err), 500
+	}
 
-	return raw, status
+	return res, status
+}
+
+func FetchGenre(param string) (string, int) {
+
+	id := "FEmusic_moods_and_genres_category"
+
+	context := GetTypeBrowse("", id, param)
+
+	raw, status := FetchBrowse(id, context)
+
+	res, err := ParseGenre(raw)
+	if err != nil {
+		return ErrorMessage(err), 500
+	}
+
+	return res, status
 }
 
 func FetchArtist(id string) (string, int) {
 
-	context := GetTypeBrowse("artist", id)
+	context := GetTypeBrowse("artist", id, "")
 
-	raw, status := FetchBrowse(id, "", context)
+	raw, status := FetchBrowse(id, context)
 
 	res, err := ParseArtist(raw)
 	if err != nil {
@@ -143,9 +124,9 @@ func FetchArtist(id string) (string, int) {
 
 func FetchLyrics(id string) (string, int) {
 
-	context := GetTypeBrowse("lyrics", id)
+	context := GetTypeBrowse("lyrics", id, "")
 
-	raw, status := FetchBrowse(id, "", context)
+	raw, status := FetchBrowse(id, context)
 
 	res, err := ParseLyrics(raw)
 	if err != nil {
@@ -155,20 +136,11 @@ func FetchLyrics(id string) (string, int) {
 	return res, status
 }
 
-func FetchPlaylist(id string) (string, int) {
-
-	context := GetTypeBrowse("playlist", id)
-
-	raw, status := FetchBrowse(id, "", context)
-
-	return raw, status
-}
-
 func FetchAlbum(id string) (string, int) {
 
-	context := GetTypeBrowse("album", id)
+	context := GetTypeBrowse("album", id, "")
 
-	raw, status := FetchBrowse(id, "", context)
+	raw, status := FetchBrowse(id, context)
 
 	url := gjson.Parse(raw).Get("microformat.microformatDataRenderer.urlCanonical").String()
 
@@ -186,7 +158,7 @@ func FetchNext(id string) (string, int) {
 		return ErrorMessage(err), 500
 	}
 
-	raw, status, err := Fetch("next", data, "")
+	raw, status, err := Fetch("next", data)
 	if err != nil {
 		return ErrorMessage(err), 500
 	}

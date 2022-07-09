@@ -9,7 +9,7 @@ var BaseContext = Context{
 	},
 }
 
-func GetTypeBrowse(t, id string) BrowseData {
+func GetTypeBrowse(t, id string, params string) BrowseData {
 
 	if t != "" {
 		return BrowseData{
@@ -25,6 +25,7 @@ func GetTypeBrowse(t, id string) BrowseData {
 		return BrowseData{
 			Context:  BaseContext,
 			BrowseId: id,
+			Params:   params,
 		}
 	}
 

@@ -10,9 +10,9 @@ type Thumbnail struct {
 type Item struct {
 	Id         string      `json:"id"`
 	Title      string      `json:"title"`
-	Sub        string      `json:"subtitle"`
-	SubId      string      `json:"subId"`
-	Thumbnails []Thumbnail `json:"thumbnails"`
+	Sub        string      `json:"subtitle,omitempty"`
+	SubId      string      `json:"subId,omitempty"`
+	Thumbnails []Thumbnail `json:"thumbnails,omitempty"`
 }
 
 type Items struct {
@@ -22,22 +22,29 @@ type Items struct {
 	Artists []Item `json:"recommendedArtists"`
 }
 
-type Home struct {
-	Contents []map[string]interface{} `json:"contents"`
-	Continue string                   `json:"continue"`
-}
-
 type Explore struct {
 	Albums   []Item `json:"albums_and_singles"`
 	Trending []Item `json:"trending"`
 }
 
+type Genres struct {
+	Moods  []Item `json:"moods"`
+	Genres []Item `json:"genres"`
+}
+
+type Genre struct {
+	Title     string `json:"title"`
+	Spotlight []Item `json:"spotlight"`
+	Featured  []Item `json:"featured"`
+	Community []Item `json:"community"`
+}
+
 type Artist struct {
 	Title            string      `json:"title"`
-	Description      string      `json:"description"`
-	BrowsePlaylistId string      `json:"browsePlaylistId"`
-	PlaylistId       string      `json:"playlistId"`
-	SubscriberCount  string      `json:"subscriberCount"`
+	Description      string      `json:"description,omitempty"`
+	BrowsePlaylistId string      `json:"browsePlaylistId,omitempty"`
+	PlaylistId       string      `json:"playlistId,omitempty"`
+	SubscriberCount  string      `json:"subscriberCount,omitempty"`
 	Thumbnails       []Thumbnail `json:"thumbnails"`
 	Items            Items       `json:"items"`
 }
@@ -60,38 +67,39 @@ type Lyrics struct {
 
 /* Structs and Types */
 type Client struct {
-	Name    string `json:"clientName"`
-	Version string `json:"clientVersion"`
+	Name    string `json:"clientName,omitempty"`
+	Version string `json:"clientVersion,omitempty"`
 }
 
 type Context struct {
-	Client Client `json:"client"`
+	Client Client `json:"client",omitempty`
 }
 
 type PageType struct {
-	PageType string `json:"pageType"`
+	PageType string `json:"pageType",omitempty`
 }
 
 type BrowseMusicConfig struct {
-	MusicConfig PageType `json:"browseEndpointContextMusicConfig"`
+	MusicConfig PageType `json:"browseEndpointContextMusicConfig,omitempty"`
 }
 
 type WatchMusicConfig struct {
-	Panel bool   `json:"hasPersistentPlaylistPanel"`
-	Type  string `json:"musicVideoType"`
+	Panel bool   `json:"hasPersistentPlaylistPanel,omitempty"`
+	Type  string `json:"musicVideoType,omitempty"`
 }
 
 type BrowseData struct {
-	Context     Context           `json:"context"`
-	MusicConfig BrowseMusicConfig `json:"browseEndpointContextMusicConfig"`
-	BrowseId    string            `json:"browseId"`
+	Context     Context           `json:"context,omitempty"`
+	MusicConfig BrowseMusicConfig `json:"browseEndpointContextMusicConfig,omitempty"`
+	BrowseId    string            `json:"browseId,omitempty"`
+	Params      string            `json:"params,omitempty"`
 }
 
 type NextData struct {
-	Id          string           `json:"videoId"`
-	Context     Context          `json:"context"`
-	Audio       bool             `json:"isAudioOnly"`
-	Tuner       string           `json:"tunerSettingValue"`
-	Panel       bool             `json:"enablePersistentPlaylistPanel"`
-	MusicConfig WatchMusicConfig `json:"watchEndpointMusicConfig"`
+	Id          string           `json:"videoId,omitempty"`
+	Context     Context          `json:"context,omitempty"`
+	Audio       bool             `json:"isAudioOnly,omitempty"`
+	Tuner       string           `json:"tunerSettingValue,omitempty"`
+	Panel       bool             `json:"enablePersistentPlaylistPanel,omitempty"`
+	MusicConfig WatchMusicConfig `json:"watchEndpointMusicConfig,omitempty"`
 }
