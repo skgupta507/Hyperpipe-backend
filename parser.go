@@ -43,7 +43,7 @@ func ParseExplore(raw string) (string, error) {
 	j := gjson.Parse(raw)
 
 	c := j.Get("contents.singleColumnBrowseResultsRenderer.tabs.0.tabRenderer.content" +
-		".tabRenderer.content.sectionListRenderer.contents.#.musicCarouselShelfRenderer")
+		".sectionListRenderer.contents.#.musicCarouselShelfRenderer")
 
 	a := c.Get("#(header.musicCarouselShelfBasicHeaderRenderer" +
 		".title.runs.0.text == New albums & singles)")
@@ -51,6 +51,8 @@ func ParseExplore(raw string) (string, error) {
 		".title.runs.0.text == Trending)")
 
 	val := Explore{
+		TrendingId: t.Get("header.musicCarouselShelfBasicHeaderRenderer" +
+			".title.runs.0.navigationEndpoint.browseEndpoint.browseId").String(),
 		Albums:   TwoRowItemRenderer("album", a.Get("contents")),
 		Trending: ResponsiveListItemRenderer(t.Get("contents")),
 	}

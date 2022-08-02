@@ -2,7 +2,17 @@
 
 Until NewPipeExtractor Supports Youtube Music Browse endpoints.
 
+## Self-Hosting
+
+### Docker
+
+Configure using `docker-compose.yml` ( Set the Proxy URL )
+
+Then run
+
+`# docker-compose up -d`
+
 
 ## Official Frontend
 
-codeberg.org/Hyperpipe/hyperpipe
+https://codeberg.org/Hyperpipe/hyperpipe

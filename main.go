@@ -11,7 +11,7 @@ func SetHeaders(c *fiber.Ctx) error {
 	c.Type("json", "utf-8")
 	c.Set("Access-Control-Allow-Origin", "*")
 	c.Set("Access-Control-Allow-Headers", "*")
-	c.Set("Access-Control-Max-Age", "1728000")
+	c.Set("Access-Control-Max-Age", "300")
 
 	return c.Next()
 }

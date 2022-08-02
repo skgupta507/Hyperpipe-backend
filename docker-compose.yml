@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  hyperpipe-backend:
+    image: hyperpipe-backend
+    build:
+      context: .
+      args:
+        proxy: "pipopiped.tokhmi.xyz"
+    container_name: hyperpipe-backend
+    restart: unless-stopped
+    ports:
+      - 3000:3000

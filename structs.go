@@ -23,8 +23,9 @@ type Items struct {
 }
 
 type Explore struct {
-	Albums   []Item `json:"albums_and_singles"`
-	Trending []Item `json:"trending"`
+	TrendingId string `json:"trendingId"`
+	Albums     []Item `json:"albums_and_singles"`
+	Trending   []Item `json:"trending"`
 }
 
 type Genres struct {
