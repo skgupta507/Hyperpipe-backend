@@ -153,15 +153,30 @@ func FetchAlbum(id string) (string, int) {
 
 func FetchNext(id string) (string, int) {
 
-	data, err := json.Marshal(GetTypeNext(id))
+	pldata, err := json.Marshal(GetTypeNext(id, ""))
+	if err != nil {
+		return ErrorMessage(err), 500
+	}
+
+	plraw, plstatus, err := Fetch("next", pldata)
+	if err != nil || plstatus > 399 {
+		return ErrorMessage(err), plstatus
+	}
+
+	pl := gjson.Parse(plraw).Get("contents." +
+		"singleColumnMusicWatchNextResultsRenderer." +
+		"tabbedRenderer.watchNextTabbedResultsRenderer.tabs.0.tabRenderer.content." +
+		"musicQueueRenderer.content.playlistPanelRenderer.contents." +
+		"#(automixPreviewVideoRenderer).automixPreviewVideoRenderer." +
+		"content.automixPlaylistVideoRenderer.navigationEndpoint." +
+		"watchPlaylistEndpoint.playlistId").String()
+
+	data, err := json.Marshal(GetTypeNext(id, pl))
 	if err != nil {
 		return ErrorMessage(err), 500
 	}
 
 	raw, status, err := Fetch("next", data)
-	if err != nil {
-		return ErrorMessage(err), 500
-	}
 
 	res, err := ParseNext(raw)
 	if err != nil {

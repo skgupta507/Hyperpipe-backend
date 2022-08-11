@@ -186,8 +186,8 @@ func ParseNext(raw string) (string, error) {
 
 	c := j.Get("contents.singleColumnMusicWatchNextResultsRenderer." +
 		"tabbedRenderer.watchNextTabbedResultsRenderer.tabs")
-	m := j.Get("playerOverlays.playerOverlayRenderer.browserMediaSession" +
-		".browserMediaSessionRenderer")
+	m := j.Get("playerOverlays.playerOverlayRenderer.browserMediaSession." +
+		"browserMediaSessionRenderer")
 
 	n := c.Get("#(tabRenderer.title == Up next).tabRenderer.content" +
 		".musicQueueRenderer.content.playlistPanelRenderer")

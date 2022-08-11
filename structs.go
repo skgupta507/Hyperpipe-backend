@@ -70,6 +70,7 @@ type Lyrics struct {
 type Client struct {
 	Name    string `json:"clientName,omitempty"`
 	Version string `json:"clientVersion,omitempty"`
+	Hl      string `json:"hl",omitempty`
 }
 
 type Context struct {
@@ -98,6 +99,7 @@ type BrowseData struct {
 
 type NextData struct {
 	Id          string           `json:"videoId,omitempty"`
+	PlaylistId  string           `json:"playlistId",omitempty`
 	Context     Context          `json:"context,omitempty"`
 	Audio       bool             `json:"isAudioOnly,omitempty"`
 	Tuner       string           `json:"tunerSettingValue,omitempty"`

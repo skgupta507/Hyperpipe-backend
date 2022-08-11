@@ -5,11 +5,12 @@ import "strings"
 var BaseContext = Context{
 	Client: Client{
 		Name:    "WEB_REMIX",
-		Version: "1.20211213.00.00",
+		Version: "1.20220803.01.00",
+		Hl:      "en-US",
 	},
 }
 
-func GetTypeBrowse(t, id string, params string) BrowseData {
+func GetTypeBrowse(t, id, params string) BrowseData {
 
 	if t != "" {
 		return BrowseData{
@@ -31,13 +32,14 @@ func GetTypeBrowse(t, id string, params string) BrowseData {
 
 }
 
-func GetTypeNext(id string) NextData {
+func GetTypeNext(id, pid string) NextData {
 	return NextData{
-		Id:      id,
-		Context: BaseContext,
-		Panel:   true,
-		Audio:   true,
-		Tuner:   "AUTOMIX_SETTING_NORMAL",
+		Id:         id,
+		PlaylistId: pid,
+		Context:    BaseContext,
+		Panel:      true,
+		Audio:      true,
+		Tuner:      "AUTOMIX_SETTING_NORMAL",
 		MusicConfig: WatchMusicConfig{
 			Panel: true,
 			Type:  "MUSIC_VIDEO_TYPE_ATV",
