@@ -145,8 +145,8 @@ func ParseArtist(raw string) (string, error) {
 		Items: Items{
 			Songs:   ResponsiveListItemRenderer(s.Get("contents")),
 			Albums:  TwoRowItemRenderer("album", a.Get("contents")),
-			Singles: TwoRowItemRenderer("singles", m.Get("contents")),
-			Artists: TwoRowItemRenderer("artist", u.Get("contents")),
+			Singles: TwoRowItemRenderer("album", m.Get("contents")),
+			Artists: TwoRowItemRenderer("", u.Get("contents")),
 		},
 	}
 

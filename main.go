@@ -17,7 +17,7 @@ func SetHeaders(c *fiber.Ctx) error {
 }
 
 func HandleHealth(c *fiber.Ctx) error {
-	defer calc(c.OriginalURL())()
+	defer calc()()
 
 	fmt.Println("Health Check!!")
 
@@ -25,7 +25,7 @@ func HandleHealth(c *fiber.Ctx) error {
 }
 
 func HandleExplore(c *fiber.Ctx) error {
-	defer calc(c.OriginalURL())()
+	defer calc()()
 
 	res, status := FetchExplore()
 
@@ -33,7 +33,7 @@ func HandleExplore(c *fiber.Ctx) error {
 }
 
 func HandleNext(c *fiber.Ctx) error {
-	defer calc(c.OriginalURL())()
+	defer calc()()
 
 	res, status := FetchNext(c.Params("id"))
 
@@ -41,7 +41,7 @@ func HandleNext(c *fiber.Ctx) error {
 }
 
 func HandleGenres(c *fiber.Ctx) error {
-	defer calc(c.OriginalURL())()
+	defer calc()()
 
 	res, status := FetchGenres()
 
@@ -49,7 +49,7 @@ func HandleGenres(c *fiber.Ctx) error {
 }
 
 func HandleGenre(c *fiber.Ctx) error {
-	defer calc(c.OriginalURL())()
+	defer calc()()
 
 	res, status := FetchGenre(c.Params("id"))
 
@@ -57,7 +57,7 @@ func HandleGenre(c *fiber.Ctx) error {
 }
 
 func HandleBrowse(c *fiber.Ctx) error {
-	defer calc(c.OriginalURL())()
+	defer calc()()
 
 	id := c.Params("id")
 
@@ -81,7 +81,7 @@ func HandleBrowse(c *fiber.Ctx) error {
 }
 
 func HandleArtist(c *fiber.Ctx) error {
-	defer calc(c.OriginalURL())()
+	defer calc()()
 
 	res, status := FetchArtist(c.Params("id"))
 

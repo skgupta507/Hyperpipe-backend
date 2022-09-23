@@ -49,7 +49,7 @@ func TwoRowItemRenderer(t string, a gjson.Result) []Item {
 
 	var id string
 
-	if t == "album" || t == "singles" {
+	if t == "album" {
 		id = "menu.menuRenderer.items.#(menuNavigationItemRenderer" +
 			".text.runs.0.text == Shuffle play).menuNavigationItemRenderer" +
 			".navigationEndpoint.watchPlaylistEndpoint.playlistId"
@@ -117,7 +117,7 @@ func ResponsiveListItemRenderer(s gjson.Result) []Item {
 					Title: flex.Get("#(navigationEndpoint.watchEndpoint" +
 						".videoId).text").String(),
 					SubId: flex.Get("#.navigationEndpoint.browseEndpoint" +
-						".#(browseId).browseId").String(),
+						".browseId").Get("0").String(),
 					Sub: flex.Get("#(navigationEndpoint.browseEndpoint" +
 						".browseId).text").String(),
 					Thumbnails: GetThumbnails(j.Get("thumbnail.musicThumbnailRenderer" +

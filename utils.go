@@ -44,10 +44,10 @@ func ErrorMessage(err error) string {
 	return fmt.Sprintf("{\"error\":\"%s\",\"message\":\"Got Error: %s\"}", data)
 }
 
-func calc(url string) func() {
+func calc() func() {
 	start := time.Now()
 	return func() {
-		msg := fmt.Sprintf("Responded %v in %v\n", url, time.Since(start))
+		msg := fmt.Sprintf("Responded in %v\n", time.Since(start))
 		fmt.Println(msg)
 	}
 }
