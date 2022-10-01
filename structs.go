@@ -1,6 +1,6 @@
 package main
 
-/* Parsers */
+// Parsers
 type Thumbnail struct {
 	Height int64  `json:"height"`
 	Width  int64  `json:"width"`
@@ -24,6 +24,7 @@ type Items struct {
 
 type Explore struct {
 	TrendingId string `json:"trendingId"`
+	ChartsId   string `json:"chartsId"`
 	Albums     []Item `json:"albums_and_singles"`
 	Trending   []Item `json:"trending"`
 }
@@ -38,6 +39,17 @@ type Genre struct {
 	Spotlight []Item `json:"spotlight"`
 	Featured  []Item `json:"featured"`
 	Community []Item `json:"community"`
+}
+
+type Options struct {
+	Default string `json:"default"`
+	All     []Item `json:"all"`
+}
+
+type Charts struct {
+	Options  Options `json:"options"`
+	Artists  []Item  `json:"artists"`
+	Trending []Item  `json:"trending"`
 }
 
 type Artist struct {
@@ -66,7 +78,7 @@ type Lyrics struct {
 	Source string `json:"source"`
 }
 
-/* Structs and Types */
+// Structs and Types
 type Client struct {
 	Name    string `json:"clientName,omitempty"`
 	Version string `json:"clientVersion,omitempty"`

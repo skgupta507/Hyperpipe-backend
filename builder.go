@@ -135,6 +135,42 @@ func ResponsiveListItemRenderer(s gjson.Result) []Item {
 	return r
 }
 
+func ResponsiveListItemRendererCH(s gjson.Result) []Item {
+
+	r := []Item{}
+
+	wg := sync.WaitGroup{}
+
+	s.ForEach(
+		func(_, v gjson.Result) bool {
+
+			wg.Add(1)
+
+			go func() {
+				defer wg.Done()
+
+				j := v.Get("musicResponsiveListItemRenderer")
+				flex := j.Get("flexColumns.#.musicResponsiveListItemFlexColumnRenderer" +
+					".text.runs.0.text")
+
+				r = append(r, Item{
+					Id:    j.Get("navigationEndpoint.browseEndpoint.browseId").String(),
+					Title: flex.Get("0").String() + " • " + flex.Get("1").String(),
+					Thumbnails: GetThumbnails(j.Get("thumbnail.musicThumbnailRenderer" +
+						".thumbnail.thumbnails")),
+				})
+
+			}()
+
+			wg.Wait()
+
+			return true
+		},
+	)
+
+	return r
+}
+
 func NavigationButton(s gjson.Result) []Item {
 
 	r := []Item{}
@@ -157,6 +193,35 @@ func NavigationButton(s gjson.Result) []Item {
 					Id:    j.Get("clickCommand.browseEndpoint.params").String(),
 					Title: RunsText(j.Get("buttonText")),
 					Sub:   fmt.Sprintf("#%06x", color),
+				})
+			}()
+
+			wg.Wait()
+
+			return true
+		},
+	)
+
+	return r
+}
+
+func MultiSelectMenuItemRenderer(j gjson.Result) []Item {
+
+	r := []Item{}
+
+	wg := sync.WaitGroup{}
+
+	j.ForEach(
+		func(_, v gjson.Result) bool {
+
+			wg.Add(1)
+
+			go func() {
+				defer wg.Done()
+
+				r = append(r, Item{
+					Id:    v.Get("selectedCommand.commandExecutorCommand.commands.#(musicBrowseFormBinderCommand).musicBrowseFormBinderCommand.browseEndpoint.params").String(),
+					Title: RunsText(v.Get("title")),
 				})
 			}()
 

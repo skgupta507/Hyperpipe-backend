@@ -42,17 +42,24 @@ func ParseExplore(raw string) (string, error) {
 
 	j := gjson.Parse(raw)
 
-	c := j.Get("contents.singleColumnBrowseResultsRenderer.tabs.0.tabRenderer.content" +
-		".sectionListRenderer.contents.#.musicCarouselShelfRenderer")
+	m := j.Get("contents.singleColumnBrowseResultsRenderer.tabs.0" +
+		".tabRenderer.content.sectionListRenderer.contents")
+
+	c := m.Get("#.musicCarouselShelfRenderer")
 
 	a := c.Get("#(header.musicCarouselShelfBasicHeaderRenderer" +
 		".title.runs.0.text == New albums & singles)")
 	t := c.Get("#(header.musicCarouselShelfBasicHeaderRenderer" +
 		".title.runs.0.text == Trending)")
 
+	charts := m.Get("#(gridRenderer).gridRenderer.items.#" +
+		".musicNavigationButtonRenderer").Get("#(buttonText" +
+		".runs.0.text == Charts)")
+
 	val := Explore{
 		TrendingId: t.Get("header.musicCarouselShelfBasicHeaderRenderer" +
 			".title.runs.0.navigationEndpoint.browseEndpoint.browseId").String(),
+		ChartsId: charts.Get("clickCommand.browseEndpoint.params").String(),
 		Albums:   TwoRowItemRenderer("album", a.Get("contents")),
 		Trending: ResponsiveListItemRenderer(t.Get("contents")),
 	}
@@ -104,6 +111,33 @@ func ParseGenre(raw string) (string, error) {
 		Spotlight: TwoRowItemRenderer("", s.Get("items")),
 		Featured:  TwoRowItemRenderer("", f.Get("items")),
 		Community: TwoRowItemRenderer("", cp.Get("items")),
+	}
+
+	res, err := json.Marshal(val)
+	if err != nil {
+		return "", err
+	}
+
+	return string(res), nil
+}
+
+func ParseCharts(raw string) (string, error) {
+
+	j := gjson.Parse(raw)
+
+	c := j.Get("contents.singleColumnBrowseResultsRenderer.tabs.0.tabRenderer.content.sectionListRenderer.contents")
+
+	o := c.Get("0.musicShelfRenderer.subheaders.0.musicSideAlignedItemRenderer.startItems.0.musicSortFilterButtonRenderer")
+	a := c.Get("#(musicCarouselShelfRenderer.header.musicCarouselShelfBasicHeaderRenderer.title.runs.0.text == Top artists).musicCarouselShelfRenderer.contents")
+	t := c.Get("#(musicCarouselShelfRenderer.header.musicCarouselShelfBasicHeaderRenderer.title.runs.0.text == Trending).musicCarouselShelfRenderer.contents")
+
+	val := Charts{
+		Options: Options{
+			Default: RunsText(o.Get("title")),
+			All:     MultiSelectMenuItemRenderer(o.Get("menu.musicMultiSelectMenuRenderer.options.#.musicMultiSelectMenuItemRenderer")),
+		},
+		Artists:  ResponsiveListItemRendererCH(a),
+		Trending: ResponsiveListItemRenderer(t),
 	}
 
 	res, err := json.Marshal(val)

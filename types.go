@@ -2,10 +2,10 @@ package main
 
 import "strings"
 
-var BaseContext = Context{
+var BaseContext Context = Context{
 	Client: Client{
 		Name:    "WEB_REMIX",
-		Version: "1.20220803.01.00",
+		Version: "1.20220926.01.00",
 		Hl:      "en-US",
 	},
 }

@@ -44,7 +44,7 @@ func Fetch(path string, data []byte) (string, int, error) {
 	return string(body), resp.StatusCode, nil
 }
 
-func FetchBrowse(id string, browse BrowseData) (string, int) {
+func FetchBrowse(browse BrowseData) (string, int) {
 
 	data, err := json.Marshal(browse)
 	if err != nil {
@@ -66,7 +66,7 @@ func FetchExplore() (string, int) {
 
 	context := GetTypeBrowse("", id, "")
 
-	raw, status := FetchBrowse(id, context)
+	raw, status := FetchBrowse(context)
 
 	res, err := ParseExplore(raw)
 	if err != nil {
@@ -82,7 +82,7 @@ func FetchGenres() (string, int) {
 
 	context := GetTypeBrowse("", id, "")
 
-	raw, status := FetchBrowse(id, context)
+	raw, status := FetchBrowse(context)
 
 	res, err := ParseGenres(raw)
 	if err != nil {
@@ -98,9 +98,25 @@ func FetchGenre(param string) (string, int) {
 
 	context := GetTypeBrowse("", id, param)
 
-	raw, status := FetchBrowse(id, context)
+	raw, status := FetchBrowse(context)
 
 	res, err := ParseGenre(raw)
+	if err != nil {
+		return ErrorMessage(err), 500
+	}
+
+	return res, status
+}
+
+func FetchCharts(params string) (string, int) {
+
+	id := "FEmusic_charts"
+
+	context := GetTypeBrowse("", id, params)
+
+	raw, status := FetchBrowse(context)
+
+	res, err := ParseCharts(raw)
 	if err != nil {
 		return ErrorMessage(err), 500
 	}
@@ -112,7 +128,7 @@ func FetchArtist(id string) (string, int) {
 
 	context := GetTypeBrowse("artist", id, "")
 
-	raw, status := FetchBrowse(id, context)
+	raw, status := FetchBrowse(context)
 
 	res, err := ParseArtist(raw)
 	if err != nil {
@@ -126,7 +142,7 @@ func FetchLyrics(id string) (string, int) {
 
 	context := GetTypeBrowse("lyrics", id, "")
 
-	raw, status := FetchBrowse(id, context)
+	raw, status := FetchBrowse(context)
 
 	res, err := ParseLyrics(raw)
 	if err != nil {
@@ -140,7 +156,7 @@ func FetchAlbum(id string) (string, int) {
 
 	context := GetTypeBrowse("album", id, "")
 
-	raw, status := FetchBrowse(id, context)
+	raw, status := FetchBrowse(context)
 
 	url := gjson.Parse(raw).Get("microformat.microformatDataRenderer.urlCanonical").String()
 
