@@ -90,11 +90,15 @@ type Context struct {
 }
 
 type PageType struct {
-	PageType string `json:"pageType",omitempty`
+	PageType string `json:"pageType,omitempty"`
 }
 
 type BrowseMusicConfig struct {
 	MusicConfig PageType `json:"browseEndpointContextMusicConfig,omitempty"`
+}
+
+type Form struct {
+	Values []string `json:"selectedValues"`
 }
 
 type WatchMusicConfig struct {
@@ -107,6 +111,7 @@ type BrowseData struct {
 	MusicConfig BrowseMusicConfig `json:"browseEndpointContextMusicConfig,omitempty"`
 	BrowseId    string            `json:"browseId,omitempty"`
 	Params      string            `json:"params,omitempty"`
+	Form        Form              `json:"formData,omitempty"`
 }
 
 type NextData struct {

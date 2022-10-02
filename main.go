@@ -59,7 +59,7 @@ func HandleGenre(c *fiber.Ctx) error {
 func HandleCharts(c *fiber.Ctx) error {
 	defer calc()()
 
-	res, status := FetchCharts(c.Params("id"))
+	res, status := FetchCharts(c.Query("params"), c.Query("code"))
 
 	return c.Status(status).SendString(res)
 }
@@ -106,7 +106,7 @@ func main() {
 	app.Get("/explore", HandleExplore)
 	app.Get("/genres", HandleGenres)
 	app.Get("/genres/:id", HandleGenre)
-	app.Get("/charts/:id", HandleCharts)
+	app.Get("/charts", HandleCharts)
 	app.Get("/next/:id", HandleNext)
 	app.Get("/browse/:id", HandleBrowse)
 	app.Get("/channel/:id", HandleArtist)

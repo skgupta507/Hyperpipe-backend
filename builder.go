@@ -205,7 +205,7 @@ func NavigationButton(s gjson.Result) []Item {
 	return r
 }
 
-func MultiSelectMenuItemRenderer(j gjson.Result) []Item {
+func MultiSelectMenuItemRenderer(j, ref gjson.Result) []Item {
 
 	r := []Item{}
 
@@ -219,8 +219,12 @@ func MultiSelectMenuItemRenderer(j gjson.Result) []Item {
 			go func() {
 				defer wg.Done()
 
+				steg := v.Get("formItemEntityKey").String()
+				id := ref.Get("#(entityKey == " + steg + ")" +
+					".payload.musicFormBooleanChoice.opaqueToken")
+
 				r = append(r, Item{
-					Id:    v.Get("selectedCommand.commandExecutorCommand.commands.#(musicBrowseFormBinderCommand).musicBrowseFormBinderCommand.browseEndpoint.params").String(),
+					Id:    id.String(),
 					Title: RunsText(v.Get("title")),
 				})
 			}()

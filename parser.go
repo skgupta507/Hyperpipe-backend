@@ -125,16 +125,29 @@ func ParseCharts(raw string) (string, error) {
 
 	j := gjson.Parse(raw)
 
-	c := j.Get("contents.singleColumnBrowseResultsRenderer.tabs.0.tabRenderer.content.sectionListRenderer.contents")
+	c := j.Get("contents.singleColumnBrowseResultsRenderer" +
+		".tabs.0.tabRenderer.content.sectionListRenderer.contents")
 
-	o := c.Get("0.musicShelfRenderer.subheaders.0.musicSideAlignedItemRenderer.startItems.0.musicSortFilterButtonRenderer")
-	a := c.Get("#(musicCarouselShelfRenderer.header.musicCarouselShelfBasicHeaderRenderer.title.runs.0.text == Top artists).musicCarouselShelfRenderer.contents")
-	t := c.Get("#(musicCarouselShelfRenderer.header.musicCarouselShelfBasicHeaderRenderer.title.runs.0.text == Trending).musicCarouselShelfRenderer.contents")
+	o := c.Get("0.musicShelfRenderer.subheaders.0" +
+		".musicSideAlignedItemRenderer.startItems.0" +
+		".musicSortFilterButtonRenderer")
+
+	a := c.Get("#(musicCarouselShelfRenderer.header.musicCarouselShelfBasicHeaderRenderer" +
+		".title.runs.0.text == Top artists)" +
+		".musicCarouselShelfRenderer.contents")
+
+	t := c.Get("#(musicCarouselShelfRenderer.header.musicCarouselShelfBasicHeaderRenderer" +
+		".title.runs.0.text == Trending)" +
+		".musicCarouselShelfRenderer.contents")
+
+	opts := o.Get("menu.musicMultiSelectMenuRenderer.options" +
+		".#.musicMultiSelectMenuItemRenderer")
+	ref := j.Get("frameworkUpdates.entityBatchUpdate.mutations")
 
 	val := Charts{
 		Options: Options{
 			Default: RunsText(o.Get("title")),
-			All:     MultiSelectMenuItemRenderer(o.Get("menu.musicMultiSelectMenuRenderer.options.#.musicMultiSelectMenuItemRenderer")),
+			All:     MultiSelectMenuItemRenderer(opts, ref),
 		},
 		Artists:  ResponsiveListItemRendererCH(a),
 		Trending: ResponsiveListItemRenderer(t),

@@ -13,7 +13,7 @@ import (
 
 func Fetch(path string, data []byte) (string, int, error) {
 
-	url := "https://music.youtube.com/youtubei/v1/" + path + "?key=AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30&prettyPrint=false"
+	url := "https://music.youtube.com/youtubei/v1/" + path + "?alt=json&key=AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30&prettyPrint=false"
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(data))
 	if err != nil {
@@ -64,7 +64,7 @@ func FetchExplore() (string, int) {
 
 	id := "FEmusic_explore"
 
-	context := GetTypeBrowse("", id, "")
+	context := GetTypeBrowse("", id, "", "")
 
 	raw, status := FetchBrowse(context)
 
@@ -80,7 +80,7 @@ func FetchGenres() (string, int) {
 
 	id := "FEmusic_moods_and_genres"
 
-	context := GetTypeBrowse("", id, "")
+	context := GetTypeBrowse("", id, "", "")
 
 	raw, status := FetchBrowse(context)
 
@@ -96,7 +96,7 @@ func FetchGenre(param string) (string, int) {
 
 	id := "FEmusic_moods_and_genres_category"
 
-	context := GetTypeBrowse("", id, param)
+	context := GetTypeBrowse("", id, param, "")
 
 	raw, status := FetchBrowse(context)
 
@@ -108,11 +108,11 @@ func FetchGenre(param string) (string, int) {
 	return res, status
 }
 
-func FetchCharts(params string) (string, int) {
+func FetchCharts(params, code string) (string, int) {
 
 	id := "FEmusic_charts"
 
-	context := GetTypeBrowse("", id, params)
+	context := GetTypeBrowse("", id, params, code)
 
 	raw, status := FetchBrowse(context)
 
@@ -126,7 +126,7 @@ func FetchCharts(params string) (string, int) {
 
 func FetchArtist(id string) (string, int) {
 
-	context := GetTypeBrowse("artist", id, "")
+	context := GetTypeBrowse("artist", id, "", "")
 
 	raw, status := FetchBrowse(context)
 
@@ -140,7 +140,7 @@ func FetchArtist(id string) (string, int) {
 
 func FetchLyrics(id string) (string, int) {
 
-	context := GetTypeBrowse("lyrics", id, "")
+	context := GetTypeBrowse("lyrics", id, "", "")
 
 	raw, status := FetchBrowse(context)
 
@@ -154,7 +154,7 @@ func FetchLyrics(id string) (string, int) {
 
 func FetchAlbum(id string) (string, int) {
 
-	context := GetTypeBrowse("album", id, "")
+	context := GetTypeBrowse("album", id, "", "")
 
 	raw, status := FetchBrowse(context)
 

@@ -10,8 +10,7 @@ var BaseContext Context = Context{
 	},
 }
 
-func GetTypeBrowse(t, id, params string) BrowseData {
-
+func GetTypeBrowse(t, id, params, form string) BrowseData {
 	if t != "" {
 		return BrowseData{
 			Context: BaseContext,
@@ -22,6 +21,15 @@ func GetTypeBrowse(t, id, params string) BrowseData {
 			},
 			BrowseId: id,
 		}
+	} else if form != "" {
+		return BrowseData{
+			Context:  BaseContext,
+			BrowseId: id,
+			Params:   params,
+			Form: Form{
+				Values: []string{form},
+			},
+		}
 	} else {
 		return BrowseData{
 			Context:  BaseContext,
@@ -29,7 +37,6 @@ func GetTypeBrowse(t, id, params string) BrowseData {
 			Params:   params,
 		}
 	}
-
 }
 
 func GetTypeNext(id, pid string) NextData {
