@@ -31,7 +31,9 @@ func ParseUrl(raw string) (string, error) {
 
 	prehost := u.Host
 
-	u.Host = "https://" + os.Getenv("HYP_PROXY")
+	u.Scheme = "https"
+	u.Host = os.Getenv("HYP_PROXY")
+
 	q := u.Query()
 	q.Set("host", prehost)
 	u.RawQuery = q.Encode()
