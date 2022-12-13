@@ -5,8 +5,6 @@ services:
     image: hyperpipe-backend
     build:
       context: .
-      args:
-        proxy: "pipopiped.tokhmi.xyz"
     container_name: hyperpipe-backend
     restart: unless-stopped
     ports:

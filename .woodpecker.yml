@@ -1,0 +1,14 @@
+pipeline:
+  docker:
+    image: woodpeckerci/plugin-docker-buildx
+    settings:
+      platforms: linux/amd64,linux/arm64
+      repo: codeberg.org/hyperpipe/hyperpipe-backend
+      registry: codeberg.org
+      tags: latest
+      username: snematoda
+      password:
+        from_secret: cb_token
+    when:
+      branch: main
+      event: ['push']
