@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/tidwall/gjson"
 	"net/url"
+	"os"
 	"strings"
 	"time"
 )
@@ -30,7 +31,7 @@ func ParseUrl(raw string) (string, error) {
 
 	prehost := u.Host
 
-	u.Host = "hyperpipe-proxy.onrender.com"
+	u.Host = os.Getenv("HYP_PROXY")
 	q := u.Query()
 	q.Set("host", prehost)
 	u.RawQuery = q.Encode()
