@@ -2,9 +2,12 @@ package main
 
 import (
 	"fmt"
+	"os"
+
+	"codeberg.org/Hyperpipe/hyperpipe-backend/lib"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/recover"
-	"os"
 )
 
 func SetHeaders(c *fiber.Ctx) error {
@@ -17,87 +20,84 @@ func SetHeaders(c *fiber.Ctx) error {
 }
 
 func HandleHealth(c *fiber.Ctx) error {
-	defer calc()()
-
 	fmt.Println("Health Check!!")
 
 	return c.SendStatus(204)
 }
 
 func HandleExplore(c *fiber.Ctx) error {
-	defer calc()()
-
-	res, status := FetchExplore()
+	res, status := lib.GetExplore()
 
 	return c.Status(status).SendString(res)
 }
 
 func HandleNext(c *fiber.Ctx) error {
-	defer calc()()
-
-	res, status := FetchNext(c.Params("id"))
+	res, status := lib.GetNext(c.Params("id"))
 
 	return c.Status(status).SendString(res)
 }
 
 func HandleGenres(c *fiber.Ctx) error {
-	defer calc()()
-
-	res, status := FetchGenres()
+	res, status := lib.GetGenres()
 
 	return c.Status(status).SendString(res)
 }
 
 func HandleGenre(c *fiber.Ctx) error {
-	defer calc()()
-
-	res, status := FetchGenre(c.Params("id"))
+	res, status := lib.GetGenre(c.Params("id"))
 
 	return c.Status(status).SendString(res)
 }
 
 func HandleCharts(c *fiber.Ctx) error {
-	defer calc()()
+	res, status := lib.GetCharts(c.Query("params"), c.Query("code"))
 
-	res, status := FetchCharts(c.Query("params"), c.Query("code"))
+	return c.Status(status).SendString(res)
+}
+
+func HandleLyrics(c *fiber.Ctx) error {
+	res, status := lib.GetLyrics(c.Params("id"))
 
 	return c.Status(status).SendString(res)
 }
 
 func HandleBrowse(c *fiber.Ctx) error {
-	defer calc()()
+
+	// Will be removed, Do not use
 
 	id := c.Params("id")
 
 	if len(id) < 4 {
-		return c.Status(500).SendString("{\"error\": \"Browse Id is too Short\"}")
+		return c.Status(500).SendString("{\"error\": \"browse id is too short\"}")
 	}
 
 	switch {
 	case id[:2] == "UC":
-		res, status := FetchArtist(id)
+		res, status := lib.GetArtist(id)
 		return c.Status(status).SendString(res)
 	case id[:4] == "MPLY":
-		res, status := FetchLyrics(id)
-		return c.Status(status).SendString(res)
-	case id[:4] == "MPRE":
-		res, status := FetchAlbum(id)
+		res, status := lib.GetLyrics(id)
 		return c.Status(status).SendString(res)
 	default:
-		return c.Status(500).SendString("{\"error\": \"Invalid Browse URL\"}")
+		return c.Status(500).SendString("{\"error\": \"URL not supported\"}")
 	}
 }
 
 func HandleArtist(c *fiber.Ctx) error {
-	defer calc()()
-
-	res, status := FetchArtist(c.Params("id"))
+	res, status := lib.GetArtist(c.Params("id"))
 
 	return c.Status(status).SendString(res)
 }
 
 func main() {
-	app := fiber.New()
+	if os.Getenv("HYP_PROXY") == "" {
+		fmt.Println("HYP_PROXY is empty!")
+		os.Exit(1)
+	}
+
+	app := fiber.New(fiber.Config{
+		Prefork: true,
+	})
 
 	app.Use(SetHeaders)
 	app.Use(recover.New())
@@ -108,6 +108,7 @@ func main() {
 	app.Get("/genres/:id", HandleGenre)
 	app.Get("/charts", HandleCharts)
 	app.Get("/next/:id", HandleNext)
+	app.Get("/lyrics/:id", HandleLyrics)
 	app.Get("/browse/:id", HandleBrowse)
 	app.Get("/channel/:id", HandleArtist)
 
