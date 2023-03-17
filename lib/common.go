@@ -59,6 +59,7 @@ func parseUrl(raw string) (string, error) {
 
 	q := u.Query()
 	q.Set("host", prehost)
+	u.RawQuery = q.Encode()
 
 	return u.String(), nil
 }
