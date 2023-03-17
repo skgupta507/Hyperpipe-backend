@@ -95,9 +95,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	app := fiber.New(fiber.Config{
-		Prefork: true,
-	})
+	app := fiber.New()
 
 	app.Use(SetHeaders)
 	app.Use(recover.New())
