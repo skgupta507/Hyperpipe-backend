@@ -163,8 +163,8 @@ func ResponsiveListItemRenderer(s gjson.Result) []Item {
 
 				j := v.Get("musicResponsiveListItemRenderer")
 				flex := j.Get(
-					"flexColumns.#.musicResponsiveListItemFlexColumnRenderer",
-				).Get("text.runs.0")
+					"flexColumns.#.musicResponsiveListItemFlexColumnRenderer.text.runs.0",
+				)
 
 				r[i] = Item{
 					Id:    j.Get("playlistItemData.videoId").String(),
@@ -207,8 +207,8 @@ func ResponsiveListItemRendererCH(s gjson.Result) []Item {
 
 				j := v.Get("musicResponsiveListItemRenderer")
 				flex := j.Get(
-					"flexColumns.#.musicResponsiveListItemFlexColumnRenderer",
-				).Get("text.runs.0.text")
+					"flexColumns.#.musicResponsiveListItemFlexColumnRenderer.text.runs.0.text",
+				)
 
 				r[i] = Item{
 					Id:    j.Get("navigationEndpoint.browseEndpoint.browseId").String(),
