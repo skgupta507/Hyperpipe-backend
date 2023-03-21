@@ -29,16 +29,16 @@ func parseArtist(raw string) (string, error) {
 	s := c.Get("#(musicShelfRenderer.title.runs.0.text == Songs).musicShelfRenderer")
 
 	a := c.Get(
-		"#(musicCarouselShelfRenderer.header.musicCarouselShelfBasicHeaderRenderer",
-	).Get("title.runs.0.text == Albums).musicCarouselShelfRenderer")
+		"#(musicCarouselShelfRenderer.header.musicCarouselShelfBasicHeaderRenderer.title.runs.0.text == Albums).musicCarouselShelfRenderer",
+	)
 
 	m := c.Get(
-		"#(musicCarouselShelfRenderer.header.musicCarouselShelfBasicHeaderRenderer",
-	).Get("title.runs.0.text == Singles).musicCarouselShelfRenderer")
+		"#(musicCarouselShelfRenderer.header.musicCarouselShelfBasicHeaderRenderer.title.runs.0.text == Singles).musicCarouselShelfRenderer",
+	)
 
 	u := c.Get(
-		"#(musicCarouselShelfRenderer.header.musicCarouselShelfBasicHeaderRenderer",
-	).Get("title.runs.0.text == Fans might also like).musicCarouselShelfRenderer")
+		"#(musicCarouselShelfRenderer.header.musicCarouselShelfBasicHeaderRenderer.title.runs.0.text == Fans might also like).musicCarouselShelfRenderer",
+	)
 
 	val := Artist{
 		Title:       RunsText(h.Get("title")),

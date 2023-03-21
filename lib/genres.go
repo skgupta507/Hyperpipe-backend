@@ -16,8 +16,11 @@ func parseGenres(raw string) (string, error) {
 
 	j := gjson.Parse(raw)
 
-	c := j.Get("contents.singleColumnBrowseResultsRenderer.tabs.0.tabRenderer" +
-		".content.sectionListRenderer.contents.#.gridRenderer")
+	c := j.Get(
+		"contents.singleColumnBrowseResultsRenderer.tabs.0.tabRenderer",
+	).Get(
+		"content.sectionListRenderer.contents.#.gridRenderer",
+	)
 
 	m := c.Get("#(header.gridHeaderRenderer.title.runs.0.text == Moods & moments)")
 	g := c.Get("#(header.gridHeaderRenderer.title.runs.0.text == Genres)")

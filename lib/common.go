@@ -101,11 +101,9 @@ func GetThumbnails(j gjson.Result) []Thumbnail {
 
 func TwoRowItemRenderer(a gjson.Result, t bool) []Item {
 
-	var id string
+	id := "menu.menuRenderer.items.#(menuNavigationItemRenderer.text.runs.0.text == Shuffle play).menuNavigationItemRenderer.navigationEndpoint.watchPlaylistEndpoint.playlistId"
 
-	if t {
-		id = "menu.menuRenderer.items.#(menuNavigationItemRenderer.text.runs.0.text == Shuffle play).menuNavigationItemRenderer.navigationEndpoint.watchPlaylistEndpoint.playlistId"
-	} else {
+	if !t {
 		id = "navigationEndpoint.browseEndpoint.browseId"
 	}
 

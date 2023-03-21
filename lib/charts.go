@@ -31,14 +31,12 @@ func parseCharts(raw string) (string, error) {
 	)
 
 	a := c.Get(
-		"#(musicCarouselShelfRenderer.header.musicCarouselShelfBasicHeaderRenderer",
-	).Get(
-		"title.runs.0.text == Top artists).musicCarouselShelfRenderer.contents",
-	)
+		"#(musicCarouselShelfRenderer.header.musicCarouselShelfBasicHeaderRenderer.title.runs.0.text == Top artists)",
+	).Get("musicCarouselShelfRenderer.contents")
 
 	t := c.Get(
-		"#(musicCarouselShelfRenderer.header.musicCarouselShelfBasicHeaderRenderer",
-	).Get("title.runs.0.text == Trending).musicCarouselShelfRenderer.contents")
+		"#(musicCarouselShelfRenderer.header.musicCarouselShelfBasicHeaderRenderer.title.runs.0.text == Trending)",
+	).Get("musicCarouselShelfRenderer.contents")
 
 	opts := o.Get(
 		"menu.musicMultiSelectMenuRenderer.options.#.musicMultiSelectMenuItemRenderer",
