@@ -162,8 +162,9 @@ func ResponsiveListItemRenderer(s gjson.Result) []Item {
 				defer wg.Done()
 
 				j := v.Get("musicResponsiveListItemRenderer")
-				flex := j.Get("flexColumns.#.musicResponsiveListItemFlexColumnRenderer" +
-					".text.runs.0")
+				flex := j.Get(
+					"flexColumns.#.musicResponsiveListItemFlexColumnRenderer",
+				).Get("text.runs.0")
 
 				r[i] = Item{
 					Id:    j.Get("playlistItemData.videoId").String(),
@@ -205,8 +206,9 @@ func ResponsiveListItemRendererCH(s gjson.Result) []Item {
 				defer wg.Done()
 
 				j := v.Get("musicResponsiveListItemRenderer")
-				flex := j.Get("flexColumns.#.musicResponsiveListItemFlexColumnRenderer" +
-					".text.runs.0.text")
+				flex := j.Get(
+					"flexColumns.#.musicResponsiveListItemFlexColumnRenderer",
+				).Get("text.runs.0.text")
 
 				r[i] = Item{
 					Id:    j.Get("navigationEndpoint.browseEndpoint.browseId").String(),
@@ -279,7 +281,7 @@ func MultiSelectMenuItemRenderer(j, ref gjson.Result) []Item {
 
 				id := ref.Get(
 					"#(entityKey == " + steg + ")",
-				).Get(".payload.musicFormBooleanChoice.opaqueToken")
+				).Get("payload.musicFormBooleanChoice.opaqueToken")
 
 				r[i] = Item{
 					Id:    id.String(),
