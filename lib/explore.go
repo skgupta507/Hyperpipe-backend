@@ -52,7 +52,7 @@ func parseExplore(raw string) (string, error) {
 
 func GetExplore() (string, int) {
 
-	context := utils.TypeBrowse("", "FEmusic_explore", "", "")
+	context := utils.TypeBrowse("FEmusic_explore", "", []string{})
 
 	raw, status := utils.FetchBrowse(context)
 

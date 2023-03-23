@@ -25,13 +25,6 @@ type Item struct {
 	Thumbnails []Thumbnail `json:"thumbnails,omitempty"`
 }
 
-type Items struct {
-	Songs   []Item `json:"songs"`
-	Albums  []Item `json:"albums"`
-	Singles []Item `json:"singles"`
-	Artists []Item `json:"recommendedArtists"`
-}
-
 func RunsText(j gjson.Result) string {
 
 	var s []string

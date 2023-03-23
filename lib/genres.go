@@ -40,7 +40,7 @@ func parseGenres(raw string) (string, error) {
 
 func GetGenres() (string, int) {
 
-	context := utils.TypeBrowse("", "FEmusic_moods_and_genres", "", "")
+	context := utils.TypeBrowse("FEmusic_moods_and_genres", "", []string{})
 
 	raw, status := utils.FetchBrowse(context)
 

@@ -62,7 +62,7 @@ func parseCharts(raw string) (string, error) {
 
 func GetCharts(params, code string) (string, int) {
 
-	context := utils.TypeBrowse("", "FEmusic_charts", params, code)
+	context := utils.TypeBrowseForm("FEmusic_charts", params, code)
 
 	raw, status := utils.FetchBrowse(context)
 

@@ -7,6 +7,29 @@ import (
 	"github.com/tidwall/gjson"
 )
 
+type Items struct {
+	Songs   []Item `json:"songs"`
+	Albums  []Item `json:"albums"`
+	Singles []Item `json:"singles"`
+	Artists []Item `json:"recommendedArtists"`
+}
+
+type MoreItem struct {
+	Params string `json:"params"`
+	Click  string `json:"click"`
+	Visit  string `json:"visit"`
+}
+
+type ArtistMore struct {
+	Album   MoreItem `json:"album"`
+	Singles MoreItem `json:"singles"`
+}
+
+type ArtistNext struct {
+	Title string `json:"title"`
+	Items []Item `json:"items"`
+}
+
 type Artist struct {
 	Title            string      `json:"title"`
 	Description      string      `json:"description,omitempty"`
@@ -15,6 +38,17 @@ type Artist struct {
 	SubscriberCount  string      `json:"subscriberCount,omitempty"`
 	Thumbnails       []Thumbnail `json:"thumbnails"`
 	Items            Items       `json:"items"`
+	More             ArtistMore  `json:"more"`
+}
+
+func parseMoreButton(raw, v gjson.Result) MoreItem {
+	nav := raw.Get("header.musicCarouselShelfBasicHeaderRenderer.moreContentButton.buttonRenderer.navigationEndpoint")
+
+	return MoreItem{
+		Params: nav.Get("browseEndpoint.params").String(),
+		Click:  nav.Get("clickTrackingParams").String(),
+		Visit:  v.String(),
+	}
 }
 
 func parseArtist(raw string) (string, error) {
@@ -61,6 +95,32 @@ func parseArtist(raw string) (string, error) {
 			Singles: TwoRowItemRenderer(m.Get("contents"), true),
 			Artists: TwoRowItemRenderer(u.Get("contents"), false),
 		},
+		More: ArtistMore{
+			Album:   parseMoreButton(a, j.Get("responseContext.visitorData")),
+			Singles: parseMoreButton(m, j.Get("responseContext.visitorData")),
+		},
+	}
+
+	res, err := json.Marshal(val)
+	if err != nil {
+		return "", err
+	}
+
+	return string(res), nil
+}
+
+func parseArtistNext(raw string) (string, error) {
+
+	j := gjson.Parse(raw)
+
+	val := ArtistNext{
+		Title: RunsText(j.Get("header.musicHeaderRenderer.title")),
+		Items: TwoRowItemRenderer(
+			j.Get(
+				"contents.singleColumnBrowseResultsRenderer.tabs.0.tabRenderer.content.sectionListRenderer.contents.0.gridRenderer.items",
+			),
+			true,
+		),
 	}
 
 	res, err := json.Marshal(val)
@@ -73,11 +133,25 @@ func parseArtist(raw string) (string, error) {
 
 func GetArtist(id string) (string, int) {
 
-	context := utils.TypeBrowse("artist", id, "", "")
+	context := utils.TypeBrowsePage(id, "artist")
 
 	raw, status := utils.FetchBrowse(context)
 
 	res, err := parseArtist(raw)
+	if err != nil {
+		return utils.ErrMsg(err), 500
+	}
+
+	return res, status
+}
+
+func GetArtistNext(id, params, ct, v string) (string, int) {
+
+	context := utils.TypeBrowse(id, params, []string{ct, v})
+
+	raw, status := utils.FetchBrowse(context)
+
+	res, err := parseArtistNext(raw)
 	if err != nil {
 		return utils.ErrMsg(err), 500
 	}

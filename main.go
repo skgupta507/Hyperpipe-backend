@@ -61,6 +61,21 @@ func HandleLyrics(c *fiber.Ctx) error {
 	return c.Status(status).SendString(res)
 }
 
+func HandleArtist(c *fiber.Ctx) error {
+	res, status := lib.GetArtist(c.Params("id"))
+
+	return c.Status(status).SendString(res)
+}
+
+func HandleArtistNext(c *fiber.Ctx) error {
+	res, status := lib.GetArtistNext(c.Params("id"),
+		c.Params("params"),
+		c.Query("ct"),
+		c.Query("v"))
+
+	return c.Status(status).SendString(res)
+}
+
 func HandleBrowse(c *fiber.Ctx) error {
 
 	// Will be removed, Do not use
@@ -83,12 +98,6 @@ func HandleBrowse(c *fiber.Ctx) error {
 	}
 }
 
-func HandleArtist(c *fiber.Ctx) error {
-	res, status := lib.GetArtist(c.Params("id"))
-
-	return c.Status(status).SendString(res)
-}
-
 func main() {
 	if os.Getenv("HYP_PROXY") == "" {
 		fmt.Println("HYP_PROXY is empty!")
@@ -109,6 +118,7 @@ func main() {
 	app.Get("/lyrics/:id", HandleLyrics)
 	app.Get("/browse/:id", HandleBrowse)
 	app.Get("/channel/:id", HandleArtist)
+	app.Get("/next/channel/:id/:params", HandleArtistNext)
 
 	port := os.Getenv("PORT")
 	if port == "" {

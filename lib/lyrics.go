@@ -36,7 +36,7 @@ func parseLyrics(raw string) (string, error) {
 
 func GetLyrics(id string) (string, int) {
 
-	context := utils.TypeBrowse("lyrics", id, "", "")
+	context := utils.TypeBrowsePage(id, "lyrics")
 
 	raw, status := utils.FetchBrowse(context)
 
