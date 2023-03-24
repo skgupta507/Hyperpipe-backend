@@ -163,8 +163,8 @@ func ResponsiveListItemRenderer(s gjson.Result) []Item {
 					Id:    j.Get("playlistItemData.videoId").String(),
 					Title: flex.Get("#(navigationEndpoint.watchEndpoint.videoId).text").String(),
 					SubId: flex.Get(
-						"#.navigationEndpoint.browseEndpoint.browseId.0",
-					).String(),
+						"#.navigationEndpoint.browseEndpoint.browseId",
+					).Get("0").String(),
 					Sub: flex.Get(
 						"#(navigationEndpoint.browseEndpoint.browseId).text",
 					).String(),

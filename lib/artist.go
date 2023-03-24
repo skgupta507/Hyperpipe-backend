@@ -21,7 +21,7 @@ type MoreItem struct {
 }
 
 type ArtistMore struct {
-	Album   MoreItem `json:"album"`
+	Album   MoreItem `json:"albums"`
 	Singles MoreItem `json:"singles"`
 }
 
