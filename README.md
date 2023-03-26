@@ -4,24 +4,51 @@ Until NewPipeExtractor Supports Youtube Music Browse endpoints.
 
 ## Self-Hosting
 
+*Please see [Hyperpipe/Docker](https://codeberg.org/Hyperpipe/Docker) if hosting both the frontend and the backend*
+
 ### Docker
 
-Configure using `docker-compose.yml` ( Set the Proxy URL )
-
-Then run
-
-`# docker-compose up -d`
-
+Run the [container](https://codeberg.org/Hyperpipe/-/packages/container/hyperpipe-backend/latest) with `HYP_PROXY` set as an env var
 
 ## Official Frontend
 
-https://codeberg.org/Hyperpipe/hyperpipe
+https://codeberg.org/Hyperpipe/Hyperpipe
+
+## Docs
+
+### `GET` `/explore`
+
+### `GET` `/genres`
+
+### `GET` `/genres/:id`
+
+- `:id` -> `ggMPO*`
+
+### `GET` `/charts?params=${id}&code=${code}`
+
+### `GET` `/next/:id`
+
+- `:id` -> `song id (same as /watch?v=:id)`
+
+### `GET` `/lyrics/:id`
+
+- `:id` -> `MPLY*`
+
+### `GET` `/channel/:id`
+s
+- `:id` -> `UC*`
+
+### `GET` `/next/channel/:id/:params?ct=${click}&v=${visit}`
+
+*Use with caution*
+
+- `:id` -> `UC*`
 
 ## License
 
 Hyperpipe-Backend
 
-Copyright (C) 2022  Shiny Nematoda
+Copyright (C) 2022-23  Shiny Nematoda
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
