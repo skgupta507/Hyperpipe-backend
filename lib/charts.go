@@ -1,8 +1,6 @@
 package lib
 
 import (
-	"encoding/json"
-
 	"codeberg.org/Hyperpipe/hyperpipe-backend/utils"
 	"github.com/tidwall/gjson"
 )
@@ -18,7 +16,7 @@ type Charts struct {
 	Trending []Item  `json:"trending"`
 }
 
-func parseCharts(raw string) (string, error) {
+func parseCharts(raw string) Charts {
 
 	j := gjson.Parse(raw)
 
@@ -43,7 +41,7 @@ func parseCharts(raw string) (string, error) {
 	)
 	ref := j.Get("frameworkUpdates.entityBatchUpdate.mutations")
 
-	val := Charts{
+	return Charts{
 		Options: Options{
 			Default: RunsText(o.Get("title")),
 			All:     MultiSelectMenuItemRenderer(opts, ref),
@@ -51,25 +49,15 @@ func parseCharts(raw string) (string, error) {
 		Artists:  ResponsiveListItemRendererCH(a),
 		Trending: ResponsiveListItemRenderer(t),
 	}
-
-	res, err := json.Marshal(val)
-	if err != nil {
-		return "", err
-	}
-
-	return string(res), nil
 }
 
-func GetCharts(params, code string) (string, int) {
+func GetCharts(params, code string) (Charts, int) {
 
 	context := utils.TypeBrowseForm("FEmusic_charts", params, code)
 
 	raw, status := utils.FetchBrowse(context)
 
-	res, err := parseCharts(raw)
-	if err != nil {
-		return utils.ErrMsg(err), 500
-	}
+	res := parseCharts(raw)
 
 	return res, status
 }

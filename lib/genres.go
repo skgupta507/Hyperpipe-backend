@@ -1,8 +1,6 @@
 package lib
 
 import (
-	"encoding/json"
-
 	"codeberg.org/Hyperpipe/hyperpipe-backend/utils"
 	"github.com/tidwall/gjson"
 )
@@ -12,7 +10,7 @@ type Genres struct {
 	Genres []Item `json:"genres"`
 }
 
-func parseGenres(raw string) (string, error) {
+func parseGenres(raw string) Genres {
 
 	j := gjson.Parse(raw)
 
@@ -25,29 +23,19 @@ func parseGenres(raw string) (string, error) {
 	m := c.Get("#(header.gridHeaderRenderer.title.runs.0.text == Moods & moments)")
 	g := c.Get("#(header.gridHeaderRenderer.title.runs.0.text == Genres)")
 
-	val := Genres{
+	return Genres{
 		Moods:  NavigationButton(m.Get("items")),
 		Genres: NavigationButton(g.Get("items")),
 	}
-
-	res, err := json.Marshal(val)
-	if err != nil {
-		return "", err
-	}
-
-	return string(res), nil
 }
 
-func GetGenres() (string, int) {
+func GetGenres() (Genres, int) {
 
 	context := utils.TypeBrowse("FEmusic_moods_and_genres", "", []string{})
 
 	raw, status := utils.FetchBrowse(context)
 
-	res, err := parseGenres(raw)
-	if err != nil {
-		return utils.ErrMsg(err), 500
-	}
+	res := parseGenres(raw)
 
 	return res, status
 }

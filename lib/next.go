@@ -14,6 +14,7 @@ type MediaSession struct {
 }
 
 type Next struct {
+	Err error `json:"error"`
 	LyricsId     string       `json:"lyricsId"`
 	Songs        []Item       `json:"songs"`
 	MediaSession MediaSession `json:"mediaSession"`
@@ -52,7 +53,7 @@ func parseNextSongs(n gjson.Result) []Item {
 	return r
 }
 
-func parseNext(raw string) (string, error) {
+func parseNext(raw string) Next {
 
 	j := gjson.Parse(raw)
 
@@ -71,7 +72,7 @@ func parseNext(raw string) (string, error) {
 		"#(tabRenderer.title == Lyrics).tabRenderer.endpoint.browseEndpoint.browseId",
 	)
 
-	val := Next{
+	return Next{
 		LyricsId: l.String(),
 		MediaSession: MediaSession{
 			Album:      RunsText(m.Get("album")),
@@ -79,25 +80,18 @@ func parseNext(raw string) (string, error) {
 		},
 		Songs: parseNextSongs(n.Get("contents")),
 	}
-
-	res, err := json.Marshal(val)
-	if err != nil {
-		return "", err
-	}
-
-	return string(res), nil
 }
 
-func GetNext(id string) (string, int) {
+func GetNext(id string) (Next, int) {
 
 	pldata, err := json.Marshal(utils.TypeNext(id, ""))
 	if err != nil {
-		return utils.ErrMsg(err), 500
+		return Next{Err: err}, 500
 	}
 
 	plraw, plstatus, err := utils.Fetch("next", pldata)
 	if err != nil || plstatus > 399 {
-		return utils.ErrMsg(err), plstatus
+		return Next{Err: err}, plstatus
 	}
 
 	pl := gjson.Parse(plraw).Get(
@@ -110,15 +104,15 @@ func GetNext(id string) (string, int) {
 
 	data, err := json.Marshal(utils.TypeNext(id, pl))
 	if err != nil {
-		return utils.ErrMsg(err), 500
+		return Next{Err: err}, 500
 	}
 
 	raw, status, err := utils.Fetch("next", data)
-
-	res, err := parseNext(raw)
 	if err != nil {
-		return utils.ErrMsg(err), 500
+		return Next{Err: err}, 500
 	}
+
+	res := parseNext(raw)
 
 	return res, status
 }

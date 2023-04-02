@@ -1,8 +1,6 @@
 package lib
 
 import (
-	"encoding/json"
-
 	"codeberg.org/Hyperpipe/hyperpipe-backend/utils"
 	"github.com/tidwall/gjson"
 )
@@ -51,7 +49,7 @@ func parseMoreButton(raw, v gjson.Result) MoreItem {
 	}
 }
 
-func parseArtist(raw string) (string, error) {
+func parseArtist(raw string) Artist {
 
 	j := gjson.Parse(raw)
 
@@ -74,7 +72,7 @@ func parseArtist(raw string) (string, error) {
 		"#(musicCarouselShelfRenderer.header.musicCarouselShelfBasicHeaderRenderer.title.runs.0.text == Fans might also like).musicCarouselShelfRenderer",
 	)
 
-	val := Artist{
+	return Artist{
 		Title:       RunsText(h.Get("title")),
 		Description: RunsText(h.Get("description")),
 		SubscriberCount: RunsText(
@@ -100,20 +98,13 @@ func parseArtist(raw string) (string, error) {
 			Singles: parseMoreButton(m, j.Get("responseContext.visitorData")),
 		},
 	}
-
-	res, err := json.Marshal(val)
-	if err != nil {
-		return "", err
-	}
-
-	return string(res), nil
 }
 
-func parseArtistNext(raw string) (string, error) {
+func parseArtistNext(raw string) ArtistNext {
 
 	j := gjson.Parse(raw)
 
-	val := ArtistNext{
+	return ArtistNext{
 		Title: RunsText(j.Get("header.musicHeaderRenderer.title")),
 		Items: TwoRowItemRenderer(
 			j.Get(
@@ -122,39 +113,26 @@ func parseArtistNext(raw string) (string, error) {
 			true,
 		),
 	}
-
-	res, err := json.Marshal(val)
-	if err != nil {
-		return "", err
-	}
-
-	return string(res), nil
 }
 
-func GetArtist(id string) (string, int) {
+func GetArtist(id string) (Artist, int) {
 
 	context := utils.TypeBrowsePage(id, "artist")
 
 	raw, status := utils.FetchBrowse(context)
 
-	res, err := parseArtist(raw)
-	if err != nil {
-		return utils.ErrMsg(err), 500
-	}
+	res := parseArtist(raw)
 
 	return res, status
 }
 
-func GetArtistNext(id, params, ct, v string) (string, int) {
+func GetArtistNext(id, params, ct, v string) (ArtistNext, int) {
 
 	context := utils.TypeBrowse(id, params, []string{ct, v})
 
 	raw, status := utils.FetchBrowse(context)
 
-	res, err := parseArtistNext(raw)
-	if err != nil {
-		return utils.ErrMsg(err), 500
-	}
+	res := parseArtistNext(raw)
 
 	return res, status
 }

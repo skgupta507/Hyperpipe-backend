@@ -1,8 +1,6 @@
 package lib
 
 import (
-	"encoding/json"
-
 	"codeberg.org/Hyperpipe/hyperpipe-backend/utils"
 	"github.com/tidwall/gjson"
 )
@@ -14,7 +12,7 @@ type Explore struct {
 	Trending   []Item `json:"trending"`
 }
 
-func parseExplore(raw string) (string, error) {
+func parseExplore(raw string) Explore {
 
 	j := gjson.Parse(raw)
 
@@ -33,7 +31,7 @@ func parseExplore(raw string) (string, error) {
 		"#(gridRenderer).gridRenderer.items.#.musicNavigationButtonRenderer",
 	).Get("#(buttonText.runs.0.text == Charts)")
 
-	val := Explore{
+	return Explore{
 		TrendingId: t.Get(
 			"header.musicCarouselShelfBasicHeaderRenderer.title.runs.0.navigationEndpoint.browseEndpoint.browseId",
 		).String(),
@@ -41,25 +39,15 @@ func parseExplore(raw string) (string, error) {
 		Albums:   TwoRowItemRenderer(a.Get("contents"), true),
 		Trending: ResponsiveListItemRenderer(t.Get("contents")),
 	}
-
-	res, err := json.Marshal(val)
-	if err != nil {
-		return "", err
-	}
-
-	return string(res), nil
 }
 
-func GetExplore() (string, int) {
+func GetExplore() (Explore, int) {
 
 	context := utils.TypeBrowse("FEmusic_explore", "", []string{})
 
 	raw, status := utils.FetchBrowse(context)
 
-	res, err := parseExplore(raw)
-	if err != nil {
-		return utils.ErrMsg(err), 500
-	}
+	res := parseExplore(raw)
 
 	return res, status
 }

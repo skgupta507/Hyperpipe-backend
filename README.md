@@ -35,7 +35,7 @@ https://codeberg.org/Hyperpipe/Hyperpipe
 - `:id` -> `MPLY*`
 
 ### `GET` `/channel/:id`
-s
+
 - `:id` -> `UC*`
 
 ### `GET` `/next/channel/:id/:params?ct=${click}&v=${visit}`

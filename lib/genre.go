@@ -1,8 +1,6 @@
 package lib
 
 import (
-	"encoding/json"
-
 	"codeberg.org/Hyperpipe/hyperpipe-backend/utils"
 	"github.com/tidwall/gjson"
 )
@@ -15,7 +13,7 @@ type Genre struct {
 	Shelf     map[string]interface{} `json:"shelf"`
 }
 
-func parseGenre(raw string) (string, error) {
+func parseGenre(raw string) Genre {
 	j := gjson.Parse(raw)
 
 	c := j.Get(
@@ -24,13 +22,11 @@ func parseGenre(raw string) (string, error) {
 
 	g := c.Get("#.gridRenderer")
 
-	var val Genre
-
 	s := g.Get("#(header.gridHeaderRenderer.title.runs.0.text == Spotlight)")
 	f := g.Get("#(header.gridHeaderRenderer.title.runs.0.text == Featured playlists)")
 	cp := g.Get("#(header.gridHeaderRenderer.title.runs.0.text == Community playlists)")
 
-	val = Genre{
+	return Genre{
 		Title:     RunsText(j.Get("header.musicHeaderRenderer.title")),
 		Spotlight: TwoRowItemRenderer(s.Get("items"), false),
 		Featured:  TwoRowItemRenderer(f.Get("items"), false),
@@ -39,25 +35,15 @@ func parseGenre(raw string) (string, error) {
 			c.Get("#.musicCarouselShelfRenderer"),
 		),
 	}
-
-	res, err := json.Marshal(val)
-	if err != nil {
-		return "", err
-	}
-
-	return string(res), nil
 }
 
-func GetGenre(param string) (string, int) {
+func GetGenre(param string) (Genre, int) {
 
 	context := utils.TypeBrowse("FEmusic_moods_and_genres_category", param, []string{})
 
 	raw, status := utils.FetchBrowse(context)
 
-	res, err := parseGenre(raw)
-	if err != nil {
-		return utils.ErrMsg(err), 500
-	}
+	res := parseGenre(raw)
 
 	return res, status
 }

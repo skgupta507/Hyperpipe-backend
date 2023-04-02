@@ -1,8 +1,6 @@
 package lib
 
 import (
-	"encoding/json"
-
 	"codeberg.org/Hyperpipe/hyperpipe-backend/utils"
 	"github.com/tidwall/gjson"
 )
@@ -12,7 +10,7 @@ type Lyrics struct {
 	Source string `json:"source"`
 }
 
-func parseLyrics(raw string) (string, error) {
+func parseLyrics(raw string) Lyrics {
 
 	j := gjson.Parse(raw)
 
@@ -21,29 +19,19 @@ func parseLyrics(raw string) (string, error) {
 	l := d.Get("description")
 	s := d.Get("footer")
 
-	val := Lyrics{
+	return Lyrics{
 		Text:   RunsText(l),
 		Source: RunsText(s),
 	}
-
-	res, err := json.Marshal(val)
-	if err != nil {
-		return "", err
-	}
-
-	return string(res), nil
 }
 
-func GetLyrics(id string) (string, int) {
+func GetLyrics(id string) (Lyrics, int) {
 
 	context := utils.TypeBrowsePage(id, "lyrics")
 
 	raw, status := utils.FetchBrowse(context)
 
-	res, err := parseLyrics(raw)
-	if err != nil {
-		return utils.ErrMsg(err), 500
-	}
+	res := parseLyrics(raw)
 
 	return res, status
 }
