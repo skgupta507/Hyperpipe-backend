@@ -82,7 +82,7 @@ func parseNext(raw string) Next {
 	}
 }
 
-func GetNext(id string) (Next, int) {
+func GetNext(id, queue string) (Next, int) {
 
 	pldata, err := json.Marshal(utils.TypeNext(id, ""))
 	if err != nil {
@@ -92,6 +92,10 @@ func GetNext(id string) (Next, int) {
 	plraw, plstatus, err := utils.Fetch("next", pldata)
 	if err != nil || plstatus > 399 {
 		return Next{Err: err}, plstatus
+	}
+
+	if queue == "avoid" {
+		return parseNext(plraw), plstatus
 	}
 
 	pl := gjson.Parse(plraw).Get(
@@ -112,7 +116,5 @@ func GetNext(id string) (Next, int) {
 		return Next{Err: err}, 500
 	}
 
-	res := parseNext(raw)
-
-	return res, status
+	return parseNext(raw), status
 }

@@ -32,7 +32,7 @@ func HandleExplore(c *fiber.Ctx) error {
 }
 
 func HandleNext(c *fiber.Ctx) error {
-	res, status := lib.GetNext(c.Params("id"))
+	res, status := lib.GetNext(c.Params("id"), c.Query("queue"))
 
 	return c.Status(status).JSON(res)
 }

@@ -26,9 +26,10 @@ https://codeberg.org/Hyperpipe/Hyperpipe
 
 ### `GET` `/charts?params=${id}&code=${code}`
 
-### `GET` `/next/:id`
+### `GET` `/next/:id?queue=${queue}`
 
 - `:id` -> `song id (same as /watch?v=:id)`
+- `$queue` -> `avoid` (optional)
 
 ### `GET` `/lyrics/:id`
 

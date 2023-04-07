@@ -128,6 +128,10 @@ func GetArtist(id string) (Artist, int) {
 
 func GetArtistNext(id, params, ct, v string) (ArtistNext, int) {
 
+	if id == "" || params == "" || ct == "" || v == "" {
+		return ArtistNext{}, 404
+	}
+	
 	context := utils.TypeBrowse(id, params, []string{ct, v})
 
 	raw, status := utils.FetchBrowse(context)
