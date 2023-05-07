@@ -1,15 +1,15 @@
 FROM --platform=$BUILDPLATFORM golang:alpine AS build
 
-ARG proxy
-
 WORKDIR /app/
 
 RUN apk --no-cache add ca-certificates
 
 COPY . .
 
-RUN go mod download && \
-	go build -ldflags "-s -w"
+ARG TARGETOS TARGETARCH
+
+RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} go mod download && \
+	CGO=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -ldflags "-s -w"
 
 EXPOSE 3000
 
