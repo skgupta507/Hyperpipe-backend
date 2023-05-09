@@ -8,7 +8,7 @@ COPY . .
 
 ARG TARGETOS TARGETARCH
 
-RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} go mod download && \
+RUN GOPROXY=https://goproxy.cn go get github.com/klauspost/compress && \
 	CGO=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -ldflags "-s -w"
 
 EXPOSE 3000
