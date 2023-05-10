@@ -8,7 +8,7 @@ COPY . .
 
 ARG TARGETOS TARGETARCH
 
-RUN GOPROXY=https://proxy.golang.org, GOPROXY=https://goproxy.cn go mod download && \
+RUN GOPROXY=https://proxy.golang.org,https://goproxy.cn go mod download && \
 	CGO=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -ldflags "-s -w"
 
 EXPOSE 3000
