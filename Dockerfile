@@ -14,7 +14,7 @@ RUN GOPROXY=https://proxy.golang.org,https://goproxy.cn go mod download && \
 FROM scratch as bin
 
 WORKDIR /app
-COPY --from=build /etc/ssl/certs/cacertificates.crt /etc/ssl/certs/
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=build /src/hyperpipe-backend .
 
 EXPOSE 3000
