@@ -3,3 +3,4 @@
 .dockerignore
 *.md
 *.txt
+*.yml
