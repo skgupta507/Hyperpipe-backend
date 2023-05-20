@@ -19,4 +19,4 @@ COPY --from=build /src/hyperpipe-backend .
 
 EXPOSE 3000
 
-CMD ./hyperpipe-backend
+CMD ["/app/hyperpipe-backend"]
