@@ -2,6 +2,13 @@
 
 Until NewPipeExtractor Supports Youtube Music Browse endpoints.
 
+## Conifig
+
+| env var | details |
+| :---: | :---: |
+| `HYP_PROXY=piped-proxy.example.tld` | hostname of the piped-proxy you would like to connect to |
+| `HYP_PREFORK=1` | enable gofiber prefork (better performance, but may not work in all machines) |
+
 ## Self-Hosting
 
 *Please see [Hyperpipe/Docker](https://codeberg.org/Hyperpipe/Docker) if hosting both the frontend and the backend*
@@ -9,6 +16,13 @@ Until NewPipeExtractor Supports Youtube Music Browse endpoints.
 ### Docker
 
 Run the [container](https://codeberg.org/Hyperpipe/-/packages/container/hyperpipe-backend/latest) with `HYP_PROXY` set as an env var
+
+### Manual
+
+```sh
+go build -tags netgo -ldflags '-s -w' -o app
+./app
+```
 
 ## Official Frontend
 

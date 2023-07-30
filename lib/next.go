@@ -82,7 +82,7 @@ func parseNext(raw string) Next {
 	}
 }
 
-func GetNext(id, queue string) (Next, int) {
+func GetNext(id string, skip bool) (Next, int) {
 
 	pldata, err := json.Marshal(utils.TypeNext(id, ""))
 	if err != nil {
@@ -94,7 +94,7 @@ func GetNext(id, queue string) (Next, int) {
 		return Next{Err: err}, plstatus
 	}
 
-	if queue == "avoid" {
+	if skip {
 		return parseNext(plraw), plstatus
 	}
 

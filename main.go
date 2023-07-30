@@ -20,8 +20,6 @@ func SetHeaders(c *fiber.Ctx) error {
 }
 
 func HandleHealth(c *fiber.Ctx) error {
-	fmt.Println("Health Check!!")
-
 	return c.SendStatus(204)
 }
 
@@ -32,7 +30,9 @@ func HandleExplore(c *fiber.Ctx) error {
 }
 
 func HandleNext(c *fiber.Ctx) error {
-	res, status := lib.GetNext(c.Params("id"), c.Query("queue"))
+	res, status := lib.GetNext(
+		c.Params("id"),
+		c.Query("queue") == "avoid")
 
 	return c.Status(status).JSON(res)
 }
@@ -50,7 +50,9 @@ func HandleGenre(c *fiber.Ctx) error {
 }
 
 func HandleCharts(c *fiber.Ctx) error {
-	res, status := lib.GetCharts(c.Query("params"), c.Query("code"))
+	res, status := lib.GetCharts(
+		c.Query("params"),
+		c.Query("code"))
 
 	return c.Status(status).JSON(res)
 }
@@ -90,7 +92,15 @@ func main() {
 		os.Exit(1)
 	}
 
-	app := fiber.New()
+	cfg := fiber.Config{
+		Prefork: false,
+	}
+
+	if os.Getenv("HYP_PREFORK") == "1" {
+		cfg.Prefork = true
+	}
+
+	app := fiber.New(cfg)
 
 	app.Use(SetHeaders)
 	app.Use(recover.New())
