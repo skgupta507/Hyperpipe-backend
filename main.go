@@ -63,6 +63,11 @@ func HandleLyrics(c *fiber.Ctx) error {
 	return c.Status(status).JSON(res)
 }
 
+func HandleAlbum(c *fiber.Ctx) error {
+	res, status := lib.GetAlbumUrl(c.Params("id"))
+	return c.Status(status).JSON(res)
+}
+
 func HandleArtist(c *fiber.Ctx) error {
 	res, status := lib.GetArtist(c.Params("id"))
 
@@ -112,6 +117,7 @@ func main() {
 	app.Get("/charts", HandleCharts)
 	app.Get("/next/:id", HandleNext)
 	app.Get("/lyrics/:id", HandleLyrics)
+	app.Get("/album/:id", HandleAlbum)
 	app.Get("/channel/:id", HandleArtist)
 	app.Get("/next/channel/:id/:params", HandleArtistNext)
 
