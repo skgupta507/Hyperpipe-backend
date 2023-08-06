@@ -309,7 +309,7 @@ func ShelfRenderer(j gjson.Result) map[string]interface{} {
 					v.Get("header.musicCarouselShelfBasicHeaderRenderer.title"),
 				)
 
-				r[title] = TwoRowItemRenderer(v.Get("contents"), false)
+				r[title] = TwoRowItemRenderer(v.Get("contents"), true)
 			}(s)
 
 			return true

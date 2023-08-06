@@ -4,7 +4,7 @@ import (
   "net/url"
   
   "codeberg.org/Hyperpipe/hyperpipe-backend/utils"
-	"github.com/tidwall/gjson"
+  "github.com/tidwall/gjson"
 )
 
 func GetAlbumUrl(id string) (map[string]string, int) {
