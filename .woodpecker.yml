@@ -6,7 +6,8 @@ steps:
       repo: codeberg.org/hyperpipe/hyperpipe-backend
       registry: codeberg.org
       tags: latest
-      username: snematoda
+      username: 
+        from_secret: cb_user
       password:
         from_secret: cb_token
     when:
