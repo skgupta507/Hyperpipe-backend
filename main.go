@@ -77,11 +77,10 @@ func HandleArtist(c *fiber.Ctx) error {
 func HandleArtistNext(c *fiber.Ctx) error {
 	if c.Params("id") == "" || c.Params("params") == "" ||
 		c.Query("ct") == "" || c.Query("v") == "" {
-			return c.Status(400).JSON(fiber.Map{
-				"error": "invalid params",
-			})
-		}
-
+		return c.Status(400).JSON(fiber.Map{
+			"error": "invalid params",
+		})
+	}
 
 	res, status := lib.GetArtistNext(c.Params("id"),
 		c.Params("params"),

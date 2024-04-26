@@ -14,7 +14,7 @@ type MediaSession struct {
 }
 
 type Next struct {
-	Err error `json:"error"`
+	Err          error        `json:"error,omitempty"`
 	LyricsId     string       `json:"lyricsId"`
 	Songs        []Item       `json:"songs"`
 	MediaSession MediaSession `json:"mediaSession"`
