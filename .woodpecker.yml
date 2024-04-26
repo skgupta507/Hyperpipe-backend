@@ -1,3 +1,7 @@
+when:
+  branch: main
+  event: ['push']
+
 steps:
   docker:
     image: woodpeckerci/plugin-docker-buildx:2
@@ -10,6 +14,3 @@ steps:
         from_secret: cb_user
       password:
         from_secret: cb_token
-    when:
-      branch: main
-      event: ['push']
