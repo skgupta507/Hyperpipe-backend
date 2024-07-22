@@ -24,15 +24,14 @@ func parseNextSongs(n gjson.Result) []Item {
 
 	np := n.Get("#.playlistPanelVideoRenderer")
 
-	r := make([]Item, n.Get("#").Int())
+	size := n.Get("#").Int()
+	r := make([]Item, size)
 
 	wg := sync.WaitGroup{}
+	wg.Add(int(size))
 
 	np.ForEach(
 		func(n, v gjson.Result) bool {
-
-			wg.Add(1)
-
 			go func(i int64, j gjson.Result) {
 				defer wg.Done()
 

@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/url"
 	"os"
-	"strings"
 	"sync"
 
 	"github.com/tidwall/gjson"
@@ -25,28 +24,21 @@ type Item struct {
 	Thumbnails []Thumbnail `json:"thumbnails,omitempty"`
 }
 
-func RunsText(j gjson.Result) string {
-
-	var s []string
-
+func RunsText(j gjson.Result) (s string) {
 	a := j.Get("runs.#.text").Array()
-
 	for i := 0; i < len(a); i++ {
-		s = append(s, a[i].String())
+		s += a[i].String()
 	}
-
-	return strings.Join(s, "")
+	return s
 }
 
 func parseUrl(raw string) (string, error) {
-
 	u, err := url.Parse(raw)
 	if err != nil {
 		return "", err
 	}
 
 	prehost := u.Host
-
 	u.Scheme = "https"
 	u.Host = os.Getenv("HYP_PROXY")
 
@@ -58,16 +50,14 @@ func parseUrl(raw string) (string, error) {
 }
 
 func GetThumbnails(j gjson.Result) []Thumbnail {
-
-	t := make([]Thumbnail, j.Get("#").Int())
+	size := j.Get("#").Int()
+	t := make([]Thumbnail, size)
 
 	wg := sync.WaitGroup{}
+	wg.Add(int(size))
 
 	j.ForEach(
 		func(n, j gjson.Result) bool {
-
-			wg.Add(1)
-
 			go func(i int64, v gjson.Result) {
 				defer wg.Done()
 
@@ -82,7 +72,6 @@ func GetThumbnails(j gjson.Result) []Thumbnail {
 					Height: v.Get("height").Int(),
 				}
 			}(n.Int(), j)
-
 			return true
 		},
 	)
@@ -100,22 +89,19 @@ func TwoRowItemRenderer(a gjson.Result, t bool) []Item {
 		id = "navigationEndpoint.browseEndpoint.browseId"
 	}
 
-	wg := sync.WaitGroup{}
-
 	v := a.Get("#.musicTwoRowItemRenderer")
+	size := v.Get("#").Int()
 
-	r := make([]Item, v.Get("#").Int())
+	r := make([]Item, size)
+	wg := sync.WaitGroup{}
+	wg.Add(int(size))
 
 	v.ForEach(
 		func(n, s gjson.Result) bool {
-
-			wg.Add(1)
-
 			go func(i int64, j gjson.Result) {
 				defer wg.Done()
 
 				gid := j.Get(id).String()
-
 				if len(gid) > 2 && gid[:2] == "VL" {
 					gid = gid[2:]
 				}
@@ -141,16 +127,14 @@ func TwoRowItemRenderer(a gjson.Result, t bool) []Item {
 }
 
 func ResponsiveListItemRenderer(s gjson.Result) []Item {
-
-	r := make([]Item, s.Get("#").Int())
+	size := s.Get("#").Int()
+	r := make([]Item, size)
 
 	wg := sync.WaitGroup{}
+	wg.Add(int(size))
 
 	s.ForEach(
 		func(n, s gjson.Result) bool {
-
-			wg.Add(1)
-
 			go func(i int64, v gjson.Result) {
 				defer wg.Done()
 
@@ -185,16 +169,14 @@ func ResponsiveListItemRenderer(s gjson.Result) []Item {
 }
 
 func ResponsiveListItemRendererCH(s gjson.Result) []Item {
-
-	r := make([]Item, s.Get("#").Int())
+	size := s.Get("#").Int()
+	r := make([]Item, size)
 
 	wg := sync.WaitGroup{}
+	wg.Add(int(size))
 
 	s.ForEach(
 		func(n, s gjson.Result) bool {
-
-			wg.Add(1)
-
 			go func(i int64, v gjson.Result) {
 				defer wg.Done()
 
@@ -223,21 +205,18 @@ func ResponsiveListItemRendererCH(s gjson.Result) []Item {
 }
 
 func NavigationButton(s gjson.Result) []Item {
-
-	r := make([]Item, s.Get("#").Int())
+	size :=  s.Get("#").Int()
+	r := make([]Item, size)
 
 	wg := sync.WaitGroup{}
+	wg.Add(int(size))
 
 	s.ForEach(
 		func(n, s gjson.Result) bool {
-
-			wg.Add(1)
-
 			go func(i int64, v gjson.Result) {
 				defer wg.Done()
 
 				j := v.Get("musicNavigationButtonRenderer")
-
 				color := j.Get("solid.leftStripeColor").Uint() & 0xffffff
 
 				r[i] = Item{
@@ -257,21 +236,18 @@ func NavigationButton(s gjson.Result) []Item {
 }
 
 func MultiSelectMenuItemRenderer(j, ref gjson.Result) []Item {
-
-	r := make([]Item, j.Get("#").Int())
+	size := j.Get("#").Int()
+	r := make([]Item, size)
 
 	wg := sync.WaitGroup{}
+	wg.Add(int(size))
 
 	j.ForEach(
 		func(n, s gjson.Result) bool {
-
-			wg.Add(1)
-
 			go func(i int64, v gjson.Result) {
 				defer wg.Done()
 
 				steg := v.Get("formItemEntityKey").String()
-
 				id := ref.Get(
 					"#(entityKey == " + steg + ")",
 				).Get("payload.musicFormBooleanChoice.opaqueToken")
@@ -294,12 +270,10 @@ func MultiSelectMenuItemRenderer(j, ref gjson.Result) []Item {
 func ShelfRenderer(j gjson.Result) map[string]interface{} {
 
 	r := make(map[string]interface{})
-
 	wg := sync.WaitGroup{}
 
 	j.ForEach(
 		func(n, s gjson.Result) bool {
-
 			wg.Add(1)
 
 			go func(v gjson.Result) {

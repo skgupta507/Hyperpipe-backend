@@ -8,7 +8,6 @@ import (
 )
 
 func GetAlbumUrl(id string) (map[string]string, int) {
-
 	ctx := utils.TypeBrowsePage(id, "album")
 	raw, status := utils.FetchBrowse(ctx)
 
