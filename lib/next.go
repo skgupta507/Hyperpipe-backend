@@ -21,16 +21,15 @@ type Next struct {
 }
 
 func parseNextSongs(n gjson.Result) []Item {
+	panel := n.Get("#.playlistPanelVideoRenderer")
 
-	np := n.Get("#.playlistPanelVideoRenderer")
-
-	size := n.Get("#").Int()
+	size := np.Get("#").Int()
 	r := make([]Item, size)
 
 	wg := sync.WaitGroup{}
 	wg.Add(int(size))
 
-	np.ForEach(
+	panel.ForEach(
 		func(n, v gjson.Result) bool {
 			go func(i int64, j gjson.Result) {
 				defer wg.Done()
@@ -56,28 +55,28 @@ func parseNext(raw string) Next {
 
 	j := gjson.Parse(raw)
 
-	c := j.Get(
+	contents := j.Get(
 		"contents.singleColumnMusicWatchNextResultsRenderer.tabbedRenderer.watchNextTabbedResultsRenderer.tabs",
 	)
-	m := j.Get(
+	mediaSession := j.Get(
 		"playerOverlays.playerOverlayRenderer.browserMediaSession.browserMediaSessionRenderer",
 	)
 
-	n := c.Get(
+	upNext := contents.Get(
 		"#(tabRenderer.title == Up next).tabRenderer.content",
 	).Get("musicQueueRenderer.content.playlistPanelRenderer")
 
-	l := c.Get(
+	lyricsId := contents.Get(
 		"#(tabRenderer.title == Lyrics).tabRenderer.endpoint.browseEndpoint.browseId",
-	)
+	).String()
 
 	return Next{
-		LyricsId: l.String(),
+		LyricsId: lyricsId,
 		MediaSession: MediaSession{
-			Album:      RunsText(m.Get("album")),
-			Thumbnails: GetThumbnails(m.Get("thumbnailDetails.thumbnails")),
+			Album:      RunsText(mediaSession.Get("album")),
+			Thumbnails: GetThumbnails(mediaSession.Get("thumbnailDetails.thumbnails")),
 		},
-		Songs: parseNextSongs(n.Get("contents")),
+		Songs: parseNextSongs(upNext.Get("contents")),
 	}
 }
 

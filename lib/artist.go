@@ -45,9 +45,9 @@ func parseMoreButton(raw gjson.Result, v string) MoreItem {
 
 	return MoreItem{
 		BrowseId: nav.Get("browseEndpoint.browseId").String(),
-		Params: nav.Get("browseEndpoint.params").String(),
-		Click:  nav.Get("clickTrackingParams").String(),
-		Visit:  v,
+		Params:   nav.Get("browseEndpoint.params").String(),
+		Click:    nav.Get("clickTrackingParams").String(),
+		Visit:    v,
 	}
 }
 

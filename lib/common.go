@@ -205,7 +205,7 @@ func ResponsiveListItemRendererCH(s gjson.Result) []Item {
 }
 
 func NavigationButton(s gjson.Result) []Item {
-	size :=  s.Get("#").Int()
+	size := s.Get("#").Int()
 	r := make([]Item, size)
 
 	wg := sync.WaitGroup{}
