@@ -23,7 +23,7 @@ type Next struct {
 func parseNextSongs(n gjson.Result) []Item {
 	panel := n.Get("#.playlistPanelVideoRenderer")
 
-	size := np.Get("#").Int()
+	size := panel.Get("#").Int()
 	r := make([]Item, size)
 
 	wg := sync.WaitGroup{}
